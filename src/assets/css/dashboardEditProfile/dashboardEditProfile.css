@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+.editProfile{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 50px 0;
+  }
+  .editProfileTopBar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin-bottom: 50px;
+  }
+  .editProfileForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+    width:90%;
+    max-width: 1200px;
+    gap:10px;
+  }
+  .editProfileForm .flexRow{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap:20px;
+    margin-bottom: 20px;
+  }
+  .flexRow .formField{
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+  }
+  .editProfileForm .inputRow{
+    width: 100%;
+    display: flex;
+    gap:20px;
+  }
+  .editProfileForm .inputRow input{
+    width:90%;
+  }
+  .editProfileForm input, .editFormSelect{
+    width:100%;
+    background-color: #f3f7fa;
+    color: #8590ad;
+    font-size: 14px;
+    padding:10px 15px;
+    border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .editProfileForm input:focus, .editFormSelect:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+
+.editProfileForm input.editable, .editFormSelect.editable {
+  background-color: #ffffff;
+  border: 1px solid #114f7e;
+  transition: all 0.3s ease-in-out;
+}
+.editProfileForm input::placeholder, .editFormSelect::placeholder {
+    color: #000000; /* Placeholder text color */
+    opacity: 1; /* Ensures the placeholder is fully opaque */
+  }
+  .editProfileForm button{
+    background: #2E86AB;
+    padding:10px 40px;
+    border-radius:10px;
+    color:#fff;
+    margin-top:20px;
+    width: 300px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+
+.editProfileForm button:hover {
+  background: #1b5d7a;
+}
+  .editProfileTopBar .editProfileBtn{
+    background: #C64C7B;
+    padding:10px 30px;
+    color:#fff;
+    box-shadow: 0 10px 20px rgb(0, 0, 0,0.2);
+    font-family: 'Poppins';
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Poppins',sans-serif;
+  }
+
+.editProfileTopBar .editProfileBtn:hover {
+  background: #a53864;
+}
+  .editProfileTopBar h1{
+    color:#000000;
+    font-size: 27px;
+    font-weight: 600;
+    font-family: 'Poppins',sans-serif;
+  }
+
+
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.editProfileForm input.editable {
+  animation: fadeIn 0.5s ease;
+}
+
+
+
+@media (max-width: 768px) {
+  
+  .editProfileForm .flexRow{
+    justify-content: center;
+    gap:20px;
+    flex-direction: column;
+  }
+  .flexRow .formField{
+    flex-basis: 100%;
+  }
+  .editProfile {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 10px;
+    padding-bottom: 50px;
+  }
+
+  .editProfileTopBar {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .editProfileTopBar h1 {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .editProfileTopBar .editProfileBtn {
+    font-size: 13px;
+    padding: 7px 15px;
+  }
+
+  .editProfileForm {
+    width: 100%;
+    max-width: 100%;
+    gap: 20px;
+  }
+
+  .editProfileForm .inputRow {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .editProfileForm .inputRow input {
+    width: 100%;
+  }
+
+  .editProfileForm input {
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  .editProfileForm button {
+    padding: 8px 30px;
+    font-size: 14px;
+  }
+}
+.formField label{
+  color:#163441;
+  font-weight: 500;
+ 
+  font-family:'Roboto', sans-serif;
+}
+.editSubmitBtn{
+  width:100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
