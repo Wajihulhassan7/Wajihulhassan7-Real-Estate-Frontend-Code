@@ -59,7 +59,7 @@ const RequestDetails = ({id}) => {
           <PropertyDetail title="Parking Availability" value={property.parkingAvailability} />
           <PropertyDetail
             title="Accessibility Features"
-            value={property.accessibilityFeatures.join(", ")}
+            value={property.accessibilityFeatures?.join(", ")}
           />
           <PropertyDetail title="Request Description" value={property.propertyDescription} />
           <PropertyDetail title="Latitude" value={property.latitude} />  

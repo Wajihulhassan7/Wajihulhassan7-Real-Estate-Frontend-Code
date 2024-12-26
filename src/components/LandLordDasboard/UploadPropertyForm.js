@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropertyFormPage1 from "./Upload1";
 import PropertyFormPage2 from "./Upload2";
 import PropertyFormPage3 from "./Upload3";
@@ -13,9 +13,11 @@ function UploadPropertyForm({ onUpdateSuccess}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const landlord = useSelector((state) => state.landlord); // Access landlord details from Redux store
+  const landlord = useSelector((state) => state.landlord); 
+  const agentLandlord = useSelector((state) => state.agentLandlord); 
+  console.log(agentLandlord);
   const [propertyDetails, setPropertyDetails] = useState({
-    userId: landlord.id, // This will be dynamically set
+    userId: null, 
     address: "",
     status: "Active",
     propertyType: "", // E.g., "Apartment"
@@ -62,7 +64,39 @@ function UploadPropertyForm({ onUpdateSuccess}) {
   
   // State to track whether the form has been submitted
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [authToken, setAuthToken] = useState(null);
 
+  useEffect(() => {
+    // Check for the logged-in user's token
+    const landlordToken = localStorage.getItem('authToken');
+    const agentLandlordToken = localStorage.getItem('authTokenAgentLandlord');
+
+    if (landlordToken) {
+      setAuthToken(landlordToken);
+    } else if (agentLandlordToken) {
+      setAuthToken(agentLandlordToken);
+    } else {
+      setAuthToken(null); // No user is logged in
+    }
+  }, []);
+
+  console.log('Auth Token:', authToken);
+
+  
+  useEffect(() => {
+    // Dynamically set the userId based on the logged-in user type
+    if (landlord.id) {
+      setPropertyDetails((prevDetails) => ({
+        ...prevDetails,
+        userId: landlord.id,
+      }));
+    } else if (agentLandlord.id) {
+      setPropertyDetails((prevDetails) => ({
+        ...prevDetails,
+        userId: agentLandlord.id,
+      }));
+    }
+  }, [landlord, agentLandlord]);
   // Navigate to the next form page
   const handleNextPage = () => {
     setCurrentPage((prevPage) => Math.min(prevPage + 1, 3)); // Ensure it doesn't exceed 3
@@ -78,9 +112,7 @@ const handleLogout = () => {
     setIsFormSubmitted(true);
    toast.loading("Saving please wait...");
     try {
-      const authToken = localStorage.getItem("authToken");
-      console.log("Auth Token:", authToken);
-  
+    
       if (!authToken) {
         alert("You are not authenticated. Please log in.");
         return;
@@ -131,6 +163,7 @@ const handleLogout = () => {
           // Handle unauthorized error
           alert("Your session has expired. Please log in again.");
           handleLogout();
+          toast.dismiss();
           return;
         }
   

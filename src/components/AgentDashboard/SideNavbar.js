@@ -50,7 +50,7 @@ const SideNavbar =({ showMenu, toggleMenu, onLinkClick, activeLink})=>{
           Upload Property
         </Link>
         <Link
-          className={`sideNavLink ${activeLink === 'requestreceived' ? 'active' : ''}`}
+          className={`sideNavLink ${activeLink === 'requestreceived' || activeLink === 'viewRequest' ? 'active' : ''}`}
           onClick={() => onLinkClick('requestreceived', 'requestreceived')}
         >
        Current Requests

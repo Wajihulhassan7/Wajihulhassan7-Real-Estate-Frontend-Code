@@ -11,23 +11,54 @@ const CurrentProperties = ({ onEditClick, onViewDetailsClick, onUploadClick }) =
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true); // To manage loading state
-  const landlord = useSelector((state) => state.landlord); // Access landlord details from Redux store
-  // Track which property's dropdown is visible by storing its ID
+  const landlord = useSelector((state) => state.landlord); 
+   const agentLandlord = useSelector((state) => state.agentLandlord); 
+   const isAuthenticatedLandlord = useSelector((state) => state.auth.isAuthenticatedLandlord);
+  const isAuthenticatedAgentLandlord = useSelector((state) => state.auth.isAuthenticatedAgentLandlord);
+
   const [visibleDropdown, setVisibleDropdown] = useState(null);
+ const [authToken, setAuthToken] = useState(null);
+
+  useEffect(() => {
+    // Check for the logged-in user's token
+    const landlordToken = localStorage.getItem('authToken');
+    const agentLandlordToken = localStorage.getItem('authTokenAgentLandlord');
+
+    if (landlordToken) {
+      setAuthToken(landlordToken);
+    } else if (agentLandlordToken) {
+      setAuthToken(agentLandlordToken);
+    } else {
+      setAuthToken(null); 
+    }
+  }, []);
 
   const toggleDropdown = (id) => {
-    setVisibleDropdown(visibleDropdown === id ? null : id); // Toggle visibility for the clicked property
+    setVisibleDropdown(visibleDropdown === id ? null : id); 
   };
   const fetchProperties = async () => {
     try {
       const response = await axios.get(`${baseUrl}/properties`);
-     
-      
+  
+      // Determine the logged-in user's ID based on authentication
+      let userId = null;
+      if (isAuthenticatedLandlord && landlord?.id) {
+        userId = landlord.id;
+      } else if (isAuthenticatedAgentLandlord && agentLandlord?.id) {
+        userId = agentLandlord.id;
+      } else {
+        console.error("No valid authenticated user found.");
+        setProperties([]); // Clear properties if no user is authenticated
+        return;
+      }
+  
+      // Filter properties based on the logged-in user's ID and status
       const filteredProperties = response.data.properties.filter(
-        (property) => 
-          property.userId === landlord.id && 
+        (property) =>
+          property.userId === userId &&
           ["Active", "Let", "To Let"].includes(property.status) // Include only specified statuses
       );
+  
       setProperties(filteredProperties);
     } catch (error) {
       console.error("Error fetching properties:", error);
@@ -39,7 +70,7 @@ const CurrentProperties = ({ onEditClick, onViewDetailsClick, onUploadClick }) =
 
   useEffect(() => {
     fetchProperties();
-  }, [landlord.id]);
+  }, [landlord.id, agentLandlord.id]);
 
   
   const handleEdit = (id) => {
@@ -60,7 +91,7 @@ const handleLogout = () => {
   }
   const updatePropertyStatus = async (propertyId, status) => {
     try {
-      const authToken = localStorage.getItem("authToken");
+    
   
       if (!authToken) {
         alert("You are not authenticated. Please log in.");

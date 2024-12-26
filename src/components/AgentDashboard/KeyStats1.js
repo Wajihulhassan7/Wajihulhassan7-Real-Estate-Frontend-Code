@@ -1,46 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { baseUrl } from '../../const/url.const';
 
-function KeyStats1({ onUploadClick, onCurrentPropertiesClick }) {
-  const landlord = useSelector((state) => state.landlord); // Access landlord details from Redux store
+function KeyStats1({ onUploadClick, onManageLandlordsClick, onRequestsReceivedClick , onLeasedPropertiesClick}) {
+   const agentLandlord = useSelector((state) => state.agentLandlord); 
   const [properties, setProperties] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch properties from the API
-  // useEffect(() => {
-  //   const fetchProperties = async () => {
-  //     try {
-  //       const response = await fetch('/properties');
-  //       if (!response.ok) {
-  //         throw new Error('Failed to fetch properties');
-  //       }
-  //       const data = await response.json();
-  //       setProperties(data.properties);
-  //     } catch (err) {
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+ 
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/properties`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch properties');
+        }
+        const data = await response.json();
+        setProperties(data.properties);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   fetchProperties();
-  // }, []);
+    fetchProperties();
+  }, []);
 
-  // Filter properties based on landlord ID
-  // const landlordProperties = properties.filter(
-  //   (property) => property.userId === landlord.id
-  // );
 
-  // // Count active properties
-  // const activePropertiesCount = landlordProperties.filter(
-  //   (property) => property.status === 'Active' || property.status === 'Let' || property.status === 'To Let'
-  // ).length;
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/properties/requests`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch properties');
+        }
+        const data = await response.json();
+        setRequests(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
+  // Count leased properties
+  const leasedPropertiesCount = properties.filter(
+    (property) => property.status === 'Leased'
+  ).length;
+
   
-  // // Count leased properties
-  // const leasedPropertiesCount = landlordProperties.filter(
-  //   (property) => property.status === 'Leased'
-  // ).length;
 
   return (
     <div
@@ -58,12 +72,12 @@ function KeyStats1({ onUploadClick, onCurrentPropertiesClick }) {
             {/* Active Listings Card */}
             <div className="bg-white shadow-[0_4px_6px_rgba(0,0,0,0.1),0_10px_15px_rgba(0,0,0,0.05)] rounded-2xl p-6 text-center flex flex-col items-center transition transform hover:scale-103 hover:shadow-2xl">
               <h2 className="text-md font-bold font-montserrat text-[#000000]">
-             Manage Landlords
+             Managed Landlords
               </h2>
               <p className="text-5xl font-inria font-light text-[#000000] my-4">
-               45
+               {agentLandlord.totalManagedLandlords}
               </p>
-              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={onCurrentPropertiesClick}>
+              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={onManageLandlordsClick}>
                 View All
               </button>
             </div>
@@ -74,9 +88,9 @@ function KeyStats1({ onUploadClick, onCurrentPropertiesClick }) {
                 Leased Properties
               </h2>
               <p className="text-5xl font-inria font-light text-[#000000] my-4">
-               35
+              {leasedPropertiesCount}
               </p>
-              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300">
+              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={onLeasedPropertiesClick}>
                 View All
               </button>
             </div>
@@ -87,10 +101,10 @@ function KeyStats1({ onUploadClick, onCurrentPropertiesClick }) {
                 Requests Received
               </h2>
               <p className="text-5xl font-inria font-light text-[#000000] my-4">
-                0
+                {requests.length}
               </p>
-              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300">
-                Update
+              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300"  onClick={onRequestsReceivedClick}>
+                View All
               </button>
             </div>
           </div>
@@ -99,7 +113,7 @@ function KeyStats1({ onUploadClick, onCurrentPropertiesClick }) {
           <div className="pt-8 pb-20">
             <button
               className="bg-[#C64C7B] text-white px-6 py-3 rounded-full text-sm hover:bg-[#9e3f60] transition duration-300"
-              // onClick={onUploadClick}
+             onClick={onUploadClick}
             >
               Upload Property
             </button>

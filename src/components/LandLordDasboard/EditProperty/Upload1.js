@@ -418,6 +418,34 @@ const handleLeaseTermChange = (event) => {
 
 
 
+{/* Latitude */}
+<div>
+  <label className="block text-sm font-medium mb-1">Latitude</label>
+  <input
+    type="text"
+    className="w-full border rounded-lg p-2"
+    name="latitude"
+    value={propertyDetails.latitude}
+    onChange={handleChange}
+    placeholder="Enter the latitude"
+    required
+  />
+</div>
+
+{/* Longitude */}
+<div>
+  <label className="block text-sm font-medium mb-1">Longitude</label>
+  <input
+    type="text"
+    className="w-full border rounded-lg p-2"
+    name="longitude"
+    value={propertyDetails.longitude}
+    onChange={handleChange}
+    placeholder="Enter the longitude"
+    required
+  />
+</div>
+
 
 
 

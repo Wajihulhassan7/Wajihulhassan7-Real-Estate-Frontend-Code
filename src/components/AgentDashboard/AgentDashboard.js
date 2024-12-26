@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useState} from "react";
 import Footer from "../Footer";
 import Header from "../Header";
-// import UploadPropertyForm from './UploadPropertyForm';
 import Image9 from "../../assets/images/image9.png";
-import { Link } from "react-router-dom";
 import CurrentProperties from "../LandLordDasboard/CurrentProperties";
 import EditProfile1 from "./EditProfile1";
 import SideNavbar from "./SideNavbar";
 import KeyStats1 from "./KeyStats1";
-import InactiveListing1 from "./InactiveListing1";
 import SearchforCareProviders1 from "../LandLordDasboard/SearchforCareProviders1";
 import RequestedProperties from "../LandLordDasboard/RequestedProperties";
 import UploadPropertyForm from "../LandLordDasboard/UploadPropertyForm";
@@ -17,6 +13,9 @@ import EditPropertyForm from "../LandLordDasboard/EditProperty/EditPropertyForm"
 import { useSelector } from "react-redux";
 import ManageLandlords from "./ManageLandlords";
 import RequestReceived from "./RequestReceived";
+import InactiveListing from "../LandLordDasboard/InactiveListing";
+import RequestDetails from "../CareProviderDashBoard/RequestDetails";
+import LeasedProperties from "../CareProviderDashBoard/LeasedProperties";
 
 const AgentDashboard = () => {
   const agentLandlord = useSelector((state) => state.agentLandlord); 
@@ -49,9 +48,9 @@ console.log(agentLandlord);
     setActiveLink("viewPropertyInactive");
   };
 
-  const handleCurrentPropertiesClick = () => {
-    setActiveComponent("currentProperties"); // Switch to edit property component
-    setActiveLink("currentProperties");
+  const handleManageLandlordsClick = () => {
+    setActiveComponent("managelandlord"); // Switch to edit property component
+    setActiveLink("managelandlord");
   };
 
   // Function to toggle the 'show' class on the sidebar
@@ -60,17 +59,40 @@ console.log(agentLandlord);
   };
 
   const handleUploadClick = () => {
-    setActiveComponent("uploadProperty"); // Change to 'uploadProperty' when button is clicked
+    setActiveComponent("uploadProperty"); 
     setActiveLink("uploadProperty");
+  };
+  
+  const  handleLeasedPropertiesClick = () => {
+    setActiveComponent("leasedProperties"); 
+    setActiveLink("dashboard");
+  };
+ 
+  
+  const handleUpdateSuccess = () => {
+    setActiveComponent('currentProperties'); // Update the state to render the CurrentProperties component
+    setActiveLink("currentProperties");
+  };
+  
+  
+  
+  const handleRequestsReceivedClick = () => {
+    setActiveComponent("requestreceived"); 
+    setActiveLink("requestreceived");
+  };
+  const handleViewDetailsRequest = (id) => {
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('viewRequest'); // Switch to edit Request component
+    setActiveLink('viewRequest');
   };
 
   return (
     <div>
       <Header />
 
-      {/* Header */}
+      
       <div className="bg-gradient-to-b from-[#154D7C]/25 to-white py-10">
-        {/* Dashboard View */}
+       
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 place-items-center mb-8">
           <div className="text-center">
             <div>
@@ -79,7 +101,7 @@ console.log(agentLandlord);
               </h1>
             </div>
             <p className="text-3xl text-[#154D7C] font-bold font-montserrat mt-8">
-              Welcome back, Anna!
+              Welcome back, {agentLandlord.fullName}!
             </p>
             <p className="text-xl text-[#C64C7B] font-medium font-raleway mt-2">
               List, Manage, Connect – All in One Place.
@@ -104,16 +126,18 @@ console.log(agentLandlord);
         {activeComponent === "dashboard" && (
           <KeyStats1
             onUploadClick={handleUploadClick}
-            onCurrentPropertiesClick={handleCurrentPropertiesClick}
+            onManageLandlordsClick={handleManageLandlordsClick}
+            onRequestsReceivedClick={handleRequestsReceivedClick}
+            onLeasedPropertiesClick={handleLeasedPropertiesClick}
           /> 
         )}
         {activeComponent === "profile1" && <EditProfile1 />}
         {activeComponent === "matchmaker" && <SearchforCareProviders1 />}
-        {activeComponent === "uploadProperty" && <UploadPropertyForm />}
+        {activeComponent === "uploadProperty" && <UploadPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
         {activeComponent === "managelandlord" && <ManageLandlords />}
-        {activeComponent === "requestreceived" && <RequestReceived />}
+        {activeComponent === "requestreceived" && <RequestReceived  onViewDetailsRequest={handleViewDetailsRequest} />}
         {activeComponent === "inactiveListings1" && (
-          <InactiveListing1
+          <InactiveListing onViewDetailsInactiveListingClick={handleDetailsInactiveListingClick}
            />
         )}
         {activeComponent === "currentProperties" && (
@@ -124,7 +148,7 @@ console.log(agentLandlord);
           />
         )}
         {activeComponent === "editProperty" && (
-          <EditPropertyForm propertyId={selectedPropertyId} />
+          <EditPropertyForm propertyId={selectedPropertyId} onUpdateSuccess={handleUpdateSuccess} />
         )}
         {activeComponent === "viewProperty" && (
           <RequestedProperties propertyId={selectedPropertyId} />
@@ -132,6 +156,8 @@ console.log(agentLandlord);
         {activeComponent === "viewPropertyInactive" && (
           <RequestedProperties propertyId={selectedPropertyId} />
         )}
+        {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
+        {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick}  />}
       </div>
       <Footer />
     </div>

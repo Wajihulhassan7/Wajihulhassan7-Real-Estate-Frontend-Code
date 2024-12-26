@@ -50,6 +50,11 @@ function CareProviderDashBoard() {
     setActiveLink('viewProperty');
   };
 
+  const handleUpdateSuccess = () => {
+    setActiveComponent('myRequests'); // Update the state to render the CurrentProperties component
+    setActiveLink('myRequests');
+  };
+  
   return (
     <div className="bg-white shadow-lg rounded-lg ">
       <Header />
@@ -96,7 +101,7 @@ function CareProviderDashBoard() {
 
 {activeComponent === 'savedProperties' && <SavedProperties onViewDetailsClick={handleDetailsClick} />}
 {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick} />}
-{activeComponent === 'requestProperty' && <RequestPropertyForm />}
+{activeComponent === 'requestProperty' && <RequestPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
 {activeComponent === 'myRequests' && <MyRequests onViewDetailsRequest={handleViewDetailsRequest} />}
 {activeComponent === 'searchProperties' && <SearchProperties />}
 {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}

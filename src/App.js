@@ -52,7 +52,12 @@ const App = () => {
   element={<PrivateRoute element={<CareProviderDashBoard />} role="isAuthenticatedCareProvider" />} 
 />
 
-        <Route path="/agentdashboard" element={<AgentDashboard />} />
+<Route 
+  path="/agentdashboard" 
+  element={<PrivateRoute element={<AgentDashboard />} role="isAuthenticatedAgentLandlord" />} 
+/>
+
+     
            <Route path="/agent-careprovider-dashboard" element={<AgentforCareProvider />} />
                 
        

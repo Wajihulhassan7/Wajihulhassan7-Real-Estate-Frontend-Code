@@ -1,34 +1,53 @@
 import React, { useState } from "react";
 import axios from "axios";
 import img from '../assets/img/houses/house11.png';
+import { baseUrl } from "../const/url.const";
+import { useNavigate } from "react-router-dom";
 
 const RegistrationAgent = () => {
+   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
     phoneNumber: "",
     companyName: "",
-    companyType: "",
+    companyAddress: "",
     password: "",
-    yearsInBusiness: "",
-    numberOfEmployees: "",
-    propertiesManaged: "",
+    totalManagedLandlords: "",
+    landlordEmail: [],
   });
+  const [currentEmail, setCurrentEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [progress, setProgress] = useState(0);
   const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-
-    if (name === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      setEmailError(emailRegex.test(value) ? "" : "Please enter a valid email address");
+  const handleAddEmail = () => {
+    if (currentEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+      if (!emailRegex.test(currentEmail)) {
+        setEmailError("Please enter a valid email address");
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          landlordEmail: [...prevData.landlordEmail, currentEmail],
+        }));
+        setCurrentEmail(""); // Clear the input
+        setEmailError(""); // Clear any previous errors
+      }
     }
   };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: name === "totalManagedLandlords" ? parseInt(value, 10) || 0 : value,
+    }));
+  
+  };
+  
 
   const handleNext = () => {
     if (step === 1) {
@@ -39,18 +58,46 @@ const RegistrationAgent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (emailError) {
-      alert("Please fix the errors in the form before submitting.");
-      return;
-    }
+    
+  handleAddEmail();
 
+  // Check for errors after attempting to add the email
+  if (emailError) {
+    alert("Please fix the errors in the form before submitting.");
+    return;
+  }
+
+  console.log(formData);
+  
     try {
-      await axios.post("http://localhost:5000/api/agent/register", formData);
-      setSuccessMessage("Registration Successful! You are now part of the PropertyConnectHub family.");
+      // Step 1: Send basic care provider data to `/auth/register`
+      await axios.post(`${baseUrl}/auth/register`, {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        type: "agentlandlord",
+      });
+  
+      await axios.post(`${baseUrl}/auth/register-agent-landlord`, {
+        email: formData.email, 
+        companyAddress: formData.companyAddress,
+        phoneNumber: formData.phoneNumber,
+        totalManagedLandlords: parseInt(formData.totalManagedLandlords, 10),
+        companyName: formData.companyName,
+        landlordEmails: formData.landlordEmail.map((email) => ({ landlordEmail: email })), 
+        type: "agentlandlord",
+      });
+      
+
+      setSuccessMessage("Registration Successful! Welcome to the CareConnect family.");
       setStep(0);
       setProgress(100);
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (error) {
-      alert("Registration failed");
+      console.error(error);
+      alert("Failed to register care provider details. Please try again.");
     }
   };
 
@@ -91,9 +138,9 @@ const RegistrationAgent = () => {
                 <div className="space-y-4">
                   <input
                     type="text"
-                    name="fullName"
+                    name="name"
                     placeholder="Full Name"
-                    value={formData.fullName}
+                    value={formData.name}
                     onChange={handleChange}
                     required
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
@@ -108,35 +155,6 @@ const RegistrationAgent = () => {
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
                   />
                   {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
-                  <input
-                    type="tel"
-                    name="phoneNumber"
-                    placeholder="Phone Number"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    required
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
-                  />
-                  <input
-                    type="text"
-                    name="companyName"
-                    placeholder="Company Name"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    required
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
-                  />
-                  <select
-                    name="companyType"
-                    value={formData.companyType}
-                    onChange={handleChange}
-                    required
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
-                  >
-                    <option value="">Select Company Type</option>
-                    <option value="Sourcing Company">Sourcing Company</option>
-                    <option value="Care Provider with a Separate Sourcing Team">Care Provider with a Separate Sourcing Team</option>
-                  </select>
                   <div className="relative w-full">
                     <input
                       type={showPassword ? "text" : "password"}
@@ -155,6 +173,7 @@ const RegistrationAgent = () => {
                       {showPassword ? "Hide" : "Show"}
                     </button>
                   </div>
+                  
                 </div>
                 <button type="submit" className="mt-6 p-3 bg-[#1762A9] text-white font-bold rounded-md w-full">
                   Next
@@ -164,34 +183,75 @@ const RegistrationAgent = () => {
 
             {step === 2 && (
               <form onSubmit={handleSubmit} className="space-y-4">
-                <h2 className="text-lg sm:text-2xl font-semibold text-[#212727] mb-4 text-center">Additional Information (Optional)</h2>
+                <h2 className="text-lg sm:text-2xl font-semibold text-[#212727] mb-4 text-center">Additional Information</h2>
                 <div className="space-y-4">
-                  <input
-                    type="number"
-                    name="yearsInBusiness"
-                    placeholder="Years in Business"
-                    value={formData.yearsInBusiness}
+                  
+                <input
+                    type="tel"
+                    name="phoneNumber"
+                    placeholder="Telephone Number"
+                    value={formData.phoneNumber}
                     onChange={handleChange}
+                    required
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
                   />
-                  <input
-                    type="number"
-                    name="numberOfEmployees"
-                    placeholder="Number of Employees"
-                    value={formData.numberOfEmployees}
-                    onChange={handleChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
-                  />
-                  <input
-                    type="number"
-                    name="propertiesManaged"
-                    placeholder="Properties Managed for Care Providers"
-                    value={formData.propertiesManaged}
-                    onChange={handleChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
-                  />
-                </div>
-                <button type="submit" className="mt-6 p-3 bg-[#1762A9] text-white font-bold rounded-md w-full">
+                
+                <input
+        type="text"
+        id="companyName"
+        name="companyName"
+        value={formData.companyName}
+        onChange={handleChange}
+        required
+        placeholder="Company Name"
+        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
+      />
+      <input
+        type="text"
+        id="companyAddress"
+        name="companyAddress"
+        value={formData.companyAddress}
+        onChange={handleChange}
+        required
+        placeholder="Company Registered Address"
+        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
+      />
+    
+
+<input
+        type="number"
+        id="totalManagedLandlords"
+        name="totalManagedLandlords"
+        value={formData.totalManagedLandlords}
+        onChange={handleChange}
+        required
+        placeholder="Total Managed Landlords"
+        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
+      />
+
+
+<div className="flex items-center space-x-2">
+        <input
+          type="email"
+          id="landlordEmail"
+          name="landlordEmail"
+          value={currentEmail}
+          onChange={(e) => setCurrentEmail(e.target.value)}
+          placeholder="Landlord Email Address"
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
+        />
+        <button
+          type="button"
+          onClick={handleAddEmail}
+          className=" bg-[#1762A9] text-white rounded-md hover:bg-[#124e88] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1762A9]"
+          style={{width:'150px', height:'50px'}}
+        >
+          Add More
+        </button>
+      </div>
+  
+                   </div>
+                <button type="submit" className="mt-6 p-3 bg-[#1762A9] text-white font-bold rounded-md w-full" onClick={handleAddEmail}>
                   Register
                 </button>
               </form>

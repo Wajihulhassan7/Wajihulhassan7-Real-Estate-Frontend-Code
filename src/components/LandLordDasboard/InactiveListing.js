@@ -8,29 +8,46 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
+    const isAuthenticatedLandlord = useSelector((state) => state.auth.isAuthenticatedLandlord);
+    const isAuthenticatedAgentLandlord = useSelector((state) => state.auth.isAuthenticatedAgentLandlord);
+  
   const [listings, setListings] = useState([]);  // Stores fetched properties
   const [visibleListings, setVisibleListings] = useState(2); // Start with 2 visible listings
   const [loading, setLoading] = useState(true); // For loading state
   const [error, setError] = useState(null); // For error handling
   const landlord = useSelector((state) => state.landlord); // Access landlord details from Redux store
-  
-  
+    const agentLandlord = useSelector((state) => state.agentLandlord); 
+    const [authToken, setAuthToken] = useState(null);
+ 
   // Handle Logout
   const handleLogout = () => {
     dispatch(logout());    
     navigate('/login');
   };
-
+  
   const fetchProperties = async () => {
+  
     try {
       const response = await fetch(`${baseUrl}/properties`);
       const data = await response.json();
-      
-      // Filter properties with status "Inactive" and matching landlord ID
+  
+      // Determine the logged-in user's ID based on authentication
+      let userId = null;
+      if (isAuthenticatedLandlord && landlord?.id) {
+        userId = landlord.id;
+      } else if (isAuthenticatedAgentLandlord && agentLandlord?.id) {
+        userId = agentLandlord.id;
+      } else {
+        console.error("No valid authenticated user found.");
+        setListings([]); // Clear listings if no user is authenticated
+        return;
+      }
+  
+      // Filter properties with status "Inactive" and matching userId
       const inactiveProperties = data.properties.filter(
-        (property) => property.status === "Inactive" && property.userId === landlord.id
+        (property) => property.status === "Inactive" && property.userId === userId
       );
-      
+  
       setListings(inactiveProperties);
     } catch (err) {
       setError("Failed to fetch properties.");
@@ -38,11 +55,25 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
       setLoading(false);
     }
   };
+  
  
   useEffect(() => {
     fetchProperties();
-  }, [landlord.id]);
+  }, [landlord.id, agentLandlord.id]);
+  
+   useEffect(() => {
+     // Check for the logged-in user's token
+     const landlordToken = localStorage.getItem('authToken');
+     const agentLandlordToken = localStorage.getItem('authTokenAgentLandlord');
  
+     if (landlordToken) {
+       setAuthToken(landlordToken);
+     } else if (agentLandlordToken) {
+       setAuthToken(agentLandlordToken);
+     } else {
+       setAuthToken(null); 
+     }
+   }, []);
  
   const showMoreListings = () => {
     setVisibleListings((prevVisibleListings) => prevVisibleListings + 2);
@@ -72,8 +103,7 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
 
   const updatePropertyStatus = async (propertyId, status) => {
     try {
-      const authToken = localStorage.getItem("authToken");
-  
+     
       if (!authToken) {
         alert("You are not authenticated. Please log in.");
         return;
@@ -189,7 +219,7 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
                       {listing.status}
                     </td>
                     <td className="px-6 py-3 text-sm text-[#000000] border border-[#154D7C]">
-                      {listing.status}
+                      {listing.leaseTerms}
                     </td>
                     <td className="px-6 py-3 text-sm text-gray-700 border border-[#2E86AB]">
                       <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">

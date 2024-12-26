@@ -30,7 +30,10 @@ const LoginForm = () => {
           navigate('/LandlordDashboard');
         } else if (userType === 'careprovider') {
           navigate('/careproviderdashboard');
-        } else {
+        } else if (userType === 'agentlandlord') {
+          navigate('/agentdashboard');
+        }
+         else {
           toast.error('Unknown user type');
         }
       })

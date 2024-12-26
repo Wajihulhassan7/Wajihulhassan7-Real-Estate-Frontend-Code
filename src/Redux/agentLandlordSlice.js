@@ -1,52 +1,71 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const agentLandlordSlice = createSlice({
-  name: 'agent',
+  name: 'agentLandlord',
   initialState: {
     id: null,
     agentId: null,
     fullName: '',
     email: '',
-    phone: '',
-    agencyName: '',
-    agencyAddress: '',
-    licenseNumber: '',
-    totalClientsManaged: '',
-    interestedInCollaborating: false,
-    availableForConsultation: false,
+    phoneNumber: '',
+    companyName: '',
+    companyAddress: '',
+    totalManagedLandlords: '',
+    landlordEmails: [], // Array to store landlord emails with details
   },
   reducers: {
-    setAgent: (state, action) => {
-      const { id, name: fullName, email, agentDetails } = action.payload;
+    setAgentLandlord: (state, action) => {
+      const {
+        id,
+        name: fullName,
+        email,
+        agentLandlordDetails: {
+          id: agentId,
+          phoneNumber,
+          companyName,
+          companyAddress,
+          totalManagedLandlords,
+          landlordEmails,
+        },
+      } = action.payload;
+
       return {
         ...state,
         id,
+        agentId,
         fullName,
         email,
-        phone: agentDetails.phoneNumber,
-        agencyName: agentDetails.agencyName,
-        licenseNumber: agentDetails.licenseNumber,
-        totalClientsManaged: agentDetails.totalClientsManaged,
-        interestedInCollaborating: agentDetails.interestedInCollaborating,
-        agentId: agentDetails.id,
-        availableForConsultation: agentDetails.availableForConsultation,
+        phoneNumber,
+        companyName,
+        companyAddress,
+        totalManagedLandlords,
+        landlordEmails: landlordEmails.map(({ landlordEmail, landlordDetails }) => ({
+          landlordEmail,
+          landlordDetails: landlordDetails
+            ? {
+                id: landlordDetails.id,
+                email: landlordDetails.email,
+                phoneNumber: landlordDetails.phoneNumber,
+                companyName: landlordDetails.companyName,
+                totalPropertiesManaged: landlordDetails.totalPropertiesManaged,
+                interestInSellingProperty: landlordDetails.interestInSellingProperty,
+                optionToBuy: landlordDetails.optionToBuy,
+              }
+            : null,
+        })),
       };
     },
-    clearAgent: (state) => {
-      return {
-        id: null,
-        agentId: null,
-        fullName: '',
-        email: '',
-        phone: '',
-        agencyName: '',
-        agencyAddress: '',
-        licenseNumber: '',
-        totalClientsManaged: '',
-        interestedInCollaborating: false,
-        availableForConsultation: false,
-      };
-    },
+    clearAgentLandlord: () => ({
+      id: null,
+      agentId: null,
+      fullName: '',
+      email: '',
+      phoneNumber: '',
+      companyName: '',
+      companyAddress: '',
+      totalManagedLandlords: '',
+      landlordEmails: [], // Reset to empty array
+    }),
   },
 });
 

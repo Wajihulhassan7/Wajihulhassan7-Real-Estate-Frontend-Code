@@ -9,19 +9,20 @@ import { baseUrl } from "../../../const/url.const";
 import { toast } from 'react-toastify';
 import BackArrow from "../../../assets/images/left-arrow.png";
 function EditPropertyForm({propertyId , onUpdateSuccess}) {
-  const landlord = useSelector((state) => state.landlord); // Access landlord details from Redux store
+  const landlord = useSelector((state) => state.landlord); 
+  const agentLandlord = useSelector((state) => state.agentLandlord); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+  const [token, setToken] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const [propertyDetails, setPropertyDetails] = useState({
-    userId: landlord.id, // This will be dynamically set
+    userId: null, 
     address: "",
     status: "Active",
-    propertyType: "", // E.g., "Apartment"
-    numOfBedrooms: "", // E.g., 2
+    propertyType: "",
+    numOfBedrooms: "", 
     isHMO: false, // Boolean value
     isArticle4: false, // Boolean value
     hmoLicense: false, // Boolean value
@@ -54,18 +55,47 @@ function EditPropertyForm({propertyId , onUpdateSuccess}) {
     numToiletsInLocation: "", // E.g., 1
     postalCode: null,
     city: "",
+    latitude: "",
+    longitude: "",
   }); 
 
+ 
 
   useEffect(() => {
+    // Check for the logged-in user's token
+    const landlordToken = localStorage.getItem('authToken');
+    const agentLandlordToken = localStorage.getItem('authTokenAgentLandlord');
+
+    if (landlordToken) {
+      setToken(landlordToken);
+    } else if (agentLandlordToken) {
+      setToken(agentLandlordToken);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Dynamically set the userId based on the logged-in user type
+    if (landlord.id) {
+      setPropertyDetails((prevDetails) => ({
+        ...prevDetails,
+        userId: landlord.id,
+      }));
+    } else if (agentLandlord.id) {
+      setPropertyDetails((prevDetails) => ({
+        ...prevDetails,
+        userId: agentLandlord.id,
+      }));
+    }
+  }, [landlord, agentLandlord]);
+  useEffect(() => {
     const fetchPropertyData = async () => {
-      const token = localStorage.getItem('authToken');  // Retrieve the token from localStorage
+    
 
       try {
         const response = await fetch(`${baseUrl}/properties/${propertyId}`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,  // Add token to the Authorization header
+            'Authorization': `Bearer ${token}`, 
             'Content-Type': 'application/json',
           },
         });
@@ -87,7 +117,7 @@ function EditPropertyForm({propertyId , onUpdateSuccess}) {
     };
 
     fetchPropertyData();
-  }, [propertyId]);
+  }, [propertyId, token]);
 
 
   const handleNextPage = () => {
@@ -107,10 +137,9 @@ function EditPropertyForm({propertyId , onUpdateSuccess}) {
    toast.loading("Saving please wait...");
      
     try {
-      const authToken = localStorage.getItem("authToken");
-      console.log("Auth Token:", authToken);
+     
   
-      if (!authToken) {
+      if (!token) {
         alert("You are not authenticated. Please log in.");
         return;
       }
@@ -147,7 +176,7 @@ function EditPropertyForm({propertyId , onUpdateSuccess}) {
       const response = await fetch(`${baseUrl}/properties/${propertyId.id}`, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });

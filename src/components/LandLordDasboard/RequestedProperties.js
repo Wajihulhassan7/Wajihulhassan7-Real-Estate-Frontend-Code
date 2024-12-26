@@ -71,6 +71,10 @@ const RequestedProperties = ({ propertyId }) => {
           <PropertyDetail title="Partly Furnished" value={property.partlyFurnished ? "Yes" : "No"} />
           <PropertyDetail title="Unfurnished" value={property.unfurnished ? "Yes" : "No"} />
           <PropertyDetail title="Rent Amount" value={`${property.rentAmount}`} />
+
+          <PropertyDetail title="Latitude" value={`${property.latitude}`} /> 
+          <PropertyDetail title="Longitude" value={`${property.longitude}`} />
+
           <PropertyDetail 
   title="Available Date" 
   value={property.availableDate.split('T')[0]} 

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { baseUrl } from "../../../const/url.const";
 
-const RequestPropertyForm = () => {
+const RequestPropertyForm = ({ onUpdateSuccess}) => {
   const careprovider = useSelector((state) => state.careProvider); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -143,7 +143,10 @@ const handleSubmit = async () => {
 
     const data = await response.json();
     toast.dismiss(); // Dismiss the loading toast
-    toast.success("Property uploaded successfully!");
+    toast.success("Request uploaded successfully!");
+    if (onUpdateSuccess) {
+      onUpdateSuccess();
+    }
     console.log("Response from server:", data);
   } catch (error) {
     console.error("Error submitting form:", error);
