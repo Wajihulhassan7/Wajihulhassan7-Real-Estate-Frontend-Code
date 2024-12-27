@@ -4,6 +4,8 @@ import axios from 'axios'; // Use axios to fetch data
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../Redux/authSlice';
 import { baseUrl } from '../../const/url.const';
+import { setCareProvider } from '../../Redux/careProviderSlice';
+import { setAgentCareProvider } from '../../Redux/agentCareProviderSlice';
 
 const ActiveProperties = ({  onViewDetailsClick }) => {
     const dispatch = useDispatch();
@@ -11,7 +13,8 @@ const ActiveProperties = ({  onViewDetailsClick }) => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true); // To manage loading state
    const careprovider = useSelector((state) => state.careProvider); 
-      const [visibleDropdown, setVisibleDropdown] = useState(null);
+    const agentCareProvider = useSelector((state) => state.agentCareProvider);   
+   const [visibleDropdown, setVisibleDropdown] = useState(null);
   
     const toggleDropdown = (id) => {
       setVisibleDropdown(visibleDropdown === id ? null : id); // Toggle visibility for the clicked property
@@ -28,39 +31,89 @@ const ActiveProperties = ({  onViewDetailsClick }) => {
     };
     
     const handleBookmarkClick = async (propertyId) => {
-      
-        try {
-            const updatedSavedProperties = [...careprovider.savedProperties, propertyId];
-          const token = localStorage.getItem('authTokenCareProvider'); 
-      
-          if (!token) {
-            alert('No token found, please log in');
-            return;
-          }
-      
-          // Send PUT request with the property ID and the token
-          const response = await fetch(`${baseUrl}/auth/careprovider/${careprovider.providerId}`, {
-            method: 'PUT',
+    
+    
+      try {
+        // Check which type of user is authenticated
+        const tokenCareProvider = localStorage.getItem('authTokenCareProvider');
+        const tokenAgentCareProvider = localStorage.getItem('authTokenAgentCareProvider');
+    
+        const isCareProvider = tokenCareProvider && !tokenAgentCareProvider;  // If CareProvider token exists but not AgentCareProvider
+        const isAgentCareProvider = tokenAgentCareProvider && !tokenCareProvider;  // If AgentCareProvider token exists but not CareProvider
+    
+        if (!isCareProvider && !isAgentCareProvider) {
+          alert('No valid token found, please log in');
+          return;
+        }
+    
+        let updatedSavedProperties = [];
+        let providerId = '';
+        let providerType = '';
+        let apiUrl = '';
+        let fetchUrl = '';
+    
+        // Determine the correct provider and update the saved properties
+        if (isCareProvider) {
+          providerId = careprovider.providerId;
+          providerType = 'careprovider';
+          updatedSavedProperties = [...careprovider.savedProperties, propertyId];
+          apiUrl = `${baseUrl}/auth/careprovider/${careprovider.providerId}`;
+          fetchUrl = `${baseUrl}/auth/users/${careprovider.id}`;  // Fetch the updated data
+        } else if (isAgentCareProvider) {
+          providerId = agentCareProvider.agentCareProviderId;
+          providerType = 'agentCareProvider';
+          updatedSavedProperties = [...agentCareProvider.savedProperties, propertyId];
+          apiUrl = `${baseUrl}/auth/agent-care-provider/${agentCareProvider.agentCareProviderId}`;
+          fetchUrl = `${baseUrl}/auth/users/${agentCareProvider.id}`;  // Fetch the updated data
+        }
+    
+        const token = isCareProvider ? tokenCareProvider : tokenAgentCareProvider;
+    
+        // Send PUT request with the property ID and the token
+        const response = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Attach token to Authorization header
+          },
+          body: JSON.stringify({
+            savedProperties: updatedSavedProperties,
+          }),
+        });
+    
+        if (response.ok) {
+          alert('Property bookmarked successfully!');
+    
+          // After success, fetch the updated user data
+          const userResponse = await fetch(fetchUrl, {
             headers: {
-              'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`, // Attach token to Authorization header
             },
-            body: JSON.stringify({
-              savedProperties: updatedSavedProperties, 
-            }),
           });
-      
-          if (response.ok) {
-            alert('Property bookmarked successfully!');
+    
+          if (userResponse.ok) {
+            const updatedUserData = await userResponse.json();
+    
+            // Dispatch updated data to Redux store
+            if (isCareProvider) {
+              dispatch(setCareProvider(updatedUserData));  // Dispatch for care provider
+            } else if (isAgentCareProvider) {
+              dispatch(setAgentCareProvider(updatedUserData));  // Dispatch for agent care provider
+            }
+    
+            console.log('Updated user data:', updatedUserData);
           } else {
-            alert('Failed to bookmark property');
+            alert('Failed to fetch updated user data');
           }
-        } catch (error) {
-          alert('Error occurred while bookmarking');
-          console.error(error);
+        } else {
+          alert('Failed to bookmark property');
         }
-      };
-         
+      } catch (error) {
+        alert('Error occurred while bookmarking');
+        console.error(error);
+      }
+    };
+            
       
   
     useEffect(() => {

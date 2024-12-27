@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { setCareProvider } from './careProviderSlice';
 import { baseUrl } from '../const/url.const';
 import { setAgentLandlord } from './agentLandlordSlice';
+import { setAgentCareProvider } from './agentCareProviderSlice';
 
 export const loginUser = createAsyncThunk('auth/login', async ({ email, password }, { dispatch, rejectWithValue }) => {
   try {
@@ -27,6 +28,8 @@ export const loginUser = createAsyncThunk('auth/login', async ({ email, password
       dispatch(setLandlord(user));
     } else if (user.type === 'careprovider') {
       dispatch(setCareProvider(user));
+    } else if (user.type === 'agentcareprovider') {
+      dispatch(setAgentCareProvider(user));
     } else if (user.type === 'agentlandlord') {
       dispatch(setAgentLandlord(user));
     }
@@ -39,10 +42,13 @@ export const loginUser = createAsyncThunk('auth/login', async ({ email, password
     return rejectWithValue(error.message);
   }
 });
+
+
 const initialState = {
   isAuthenticatedLandlord: !!localStorage.getItem('authToken'),
   isAuthenticatedCareProvider: !!localStorage.getItem('authTokenCareProvider'),
   isAuthenticatedAgentLandlord: !!localStorage.getItem('authTokenAgentLandlord'),
+  isAuthenticatedAgentCareProvider: !!localStorage.getItem('authTokenAgentCareProvider'),
   user: null,
   loading: false,
   error: null,
@@ -57,9 +63,11 @@ const authSlice = createSlice({
       state.isAuthenticatedLandlord = false;
       state.isAuthenticatedCareProvider = false;
       state.isAuthenticatedAgentLandlord = false;
+      state.isAuthenticatedAgentCareProvider = false;
       localStorage.removeItem('authToken');
       localStorage.removeItem('authTokenCareProvider');
       localStorage.removeItem('authTokenAgentLandlord');
+      localStorage.removeItem('authTokenAgentCareProvider');
     },
     setUserFromToken: (state, action) => {
       state.user = action.payload.user;
@@ -69,6 +77,8 @@ const authSlice = createSlice({
         state.isAuthenticatedCareProvider = true;
       } else if (action.payload.user.type === 'agentlandlord') {
         state.isAuthenticatedAgentLandlord = true;
+      } else if (action.payload.user.type === 'agentcareprovider') {
+        state.isAuthenticatedAgentCareProvider = true;
       }
     },
   },
@@ -93,6 +103,9 @@ const authSlice = createSlice({
         } else if (user.type === 'agentlandlord') {
           localStorage.setItem('authTokenAgentLandlord', token);
           state.isAuthenticatedAgentLandlord = true;
+        } else if (user.type === 'agentcareprovider') {
+          localStorage.setItem('authTokenAgentCareProvider', token);
+          state.isAuthenticatedAgentCareProvider = true;
         }
 
         state.user = user;
@@ -109,6 +122,7 @@ export const checkUserToken = () => (dispatch) => {
   const landlordToken = localStorage.getItem('authToken');
   const careProviderToken = localStorage.getItem('authTokenCareProvider');
   const agentLandlordToken = localStorage.getItem('authTokenAgentLandlord');
+  const agentCareProviderToken = localStorage.getItem('authTokenAgentCareProvider');
 
   if (landlordToken) {
     try {
@@ -159,7 +173,26 @@ export const checkUserToken = () => (dispatch) => {
     } catch (error) {
       console.error('Agent Landlord token decoding failed:', error);
     }
+  } else if (agentCareProviderToken) {
+    try {
+      const decodedToken = jwtDecode(agentCareProviderToken);
+  
+      if (decodedToken.agentCareproviderDetails) {
+        dispatch(setAgentCareProvider(decodedToken));
+        dispatch(setUserFromToken({
+          user: {
+            ...decodedToken,
+            agentCareproviderDetails: decodedToken.agentCareproviderDetails,
+          },
+        }));
+      } else {
+        console.error('AgentCareProviderDetails not found in token');
+      }
+    } catch (error) {
+      console.error('Agent Care Provider token decoding failed:', error);
+    }
   }
+  
 };
 
 export const { logout, setUserFromToken } = authSlice.actions;

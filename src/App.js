@@ -58,7 +58,11 @@ const App = () => {
 />
 
      
-           <Route path="/agent-careprovider-dashboard" element={<AgentforCareProvider />} />
+<Route 
+  path="/agent-careprovider-dashboard" 
+  element={<PrivateRoute element={<AgentforCareProvider />} role="isAuthenticatedAgentCareProvider" />} 
+/>
+
                 
        
       </Routes>

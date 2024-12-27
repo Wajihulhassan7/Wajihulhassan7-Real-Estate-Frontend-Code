@@ -3,6 +3,7 @@ import authReducer from './authSlice';
 import landlordReducer from './landlordSlice';
 import agentLandlordReducer from './agentLandlordSlice';
 import careProviderReducer from './careProviderSlice';
+import agentCareProviderReducer from './agentCareProviderSlice';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     landlord: landlordReducer,
     agentLandlord: agentLandlordReducer,
     careProvider: careProviderReducer,
+    agentCareProvider: agentCareProviderReducer,
   },
 });
 

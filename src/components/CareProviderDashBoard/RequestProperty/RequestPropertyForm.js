@@ -15,7 +15,7 @@ const RequestPropertyForm = ({ onUpdateSuccess}) => {
   const [propertyDetails, setPropertyDetails] = useState({
       userId: careprovider.id, 
       address: "",
-      status: "Saved",
+      status: "Open",
       propertyType: "", // E.g., "Apartment"
       numOfBedrooms: "", // E.g., 2
       isHMO: false, // Boolean value

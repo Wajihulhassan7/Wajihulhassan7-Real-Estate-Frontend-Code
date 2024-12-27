@@ -16,6 +16,7 @@ import RequestReceived from "./RequestReceived";
 import InactiveListing from "../LandLordDasboard/InactiveListing";
 import RequestDetails from "../CareProviderDashBoard/RequestDetails";
 import LeasedProperties from "../CareProviderDashBoard/LeasedProperties";
+import ActiveInactiveListings from "./ActiveInactiveListings";
 
 const AgentDashboard = () => {
   const agentLandlord = useSelector((state) => state.agentLandlord); 
@@ -40,6 +41,7 @@ console.log(agentLandlord);
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent("viewProperty"); // Switch to edit property component
     setActiveLink("viewProperty");
+    
   };
 
   const handleDetailsInactiveListingClick = (id) => {
@@ -81,11 +83,17 @@ console.log(agentLandlord);
     setActiveLink("requestreceived");
   };
   const handleViewDetailsRequest = (id) => {
-    setSelectedPropertyId(id); // Store the selected property ID
-    setActiveComponent('viewRequest'); // Switch to edit Request component
+    setSelectedPropertyId(id); 
+    setActiveComponent('viewRequest'); 
     setActiveLink('viewRequest');
   };
-
+  
+  const manageViewDetailsActiveInactive = (email) => {
+    setSelectedPropertyId(email); 
+    setActiveComponent('viewLandlordDetails'); 
+    setActiveLink('managelandlord');
+  };
+  
   return (
     <div>
       <Header />
@@ -134,7 +142,7 @@ console.log(agentLandlord);
         {activeComponent === "profile1" && <EditProfile1 />}
         {activeComponent === "matchmaker" && <SearchforCareProviders1 />}
         {activeComponent === "uploadProperty" && <UploadPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
-        {activeComponent === "managelandlord" && <ManageLandlords />}
+        {activeComponent === "managelandlord" && <ManageLandlords handleViewDetails={manageViewDetailsActiveInactive} />}
         {activeComponent === "requestreceived" && <RequestReceived  onViewDetailsRequest={handleViewDetailsRequest} />}
         {activeComponent === "inactiveListings1" && (
           <InactiveListing onViewDetailsInactiveListingClick={handleDetailsInactiveListingClick}
@@ -158,6 +166,7 @@ console.log(agentLandlord);
         )}
         {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
         {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick}  />}
+        {activeComponent === 'viewLandlordDetails' && <ActiveInactiveListings email={selectedPropertyId} onViewDetailsClick={handleDetailsClick}  />}
       </div>
       <Footer />
     </div>

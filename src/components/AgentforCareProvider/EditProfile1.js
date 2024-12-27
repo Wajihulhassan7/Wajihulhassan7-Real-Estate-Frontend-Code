@@ -1,24 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../assets/css/dashboardEditProfile/dashboardEditProfile.css";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { logout } from "../../Redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { setAgentLandlord } from "../../Redux/agentLandlordSlice"; 
+import { setAgentCareProvider } from "../../Redux/agentCareProviderSlice"; 
+import { baseUrl } from "../../const/url.const";
+
 const EditProfile1 = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const agentLandlord = useSelector((state) => state.agentLandlord); 
+  const agentCareProvider = useSelector((state) => state.agentCareProvider); 
   const [isEditing, setIsEditing] = useState(false);
+  const [token, setToken] = useState(null);
   const [formData, setFormData] = useState({
-    fullName: agentLandlord.fullName,
-    phone: agentLandlord.phoneNumber,
-    email: agentLandlord.email,
-    companyName: agentLandlord.companyName,
-    agencyLicenseNumber: agentLandlord.agencyLicenseNumber,
-    totalPropertiesManaged: agentLandlord.totalPropertiesManaged,
+    fullName: agentCareProvider.fullName,
+    phoneNumber: agentCareProvider.phoneNumber,
+    email: agentCareProvider.email,
+    companyName: agentCareProvider.companyName,
+    companyType: agentCareProvider.companyType,
+    yearsInBusiness: agentCareProvider.yearsInBusiness,
+    numberOfEmployees: agentCareProvider.numberOfEmployees,
+    totalManagedCareProviders: agentCareProvider.totalManagedCareProviders,
+    careProviderEmails: agentCareProvider.careProviderEmails?.map((provider) => ({
+      careProviderEmail: provider.careProviderEmail || '',
+      careProviderDetails: provider.careProviderDetails || {},
+    })) || [],
   });
+
+  useEffect(() => {
+    const careProviderToken = localStorage.getItem('authTokenAgentCareProvider');
+
+    if (careProviderToken) {
+      setToken(careProviderToken);
+    }
+  }, []);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -32,171 +49,284 @@ const EditProfile1 = () => {
     }));
   };
 
- 
+  const handleCareProviderEmailChange = (e, index) => {
+    const { value } = e.target;
+    setFormData((prevData) => {
+      const updatedCareProviderEmails = [...prevData.careProviderEmails];
+      updatedCareProviderEmails[index] = {
+        ...updatedCareProviderEmails[index],
+        careProviderEmail: value, // Update only the email
+      };
+      return { ...prevData, careProviderEmails: updatedCareProviderEmails };
+    });
+  };
+
+  const addCareProviderEmail = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      careProviderEmails: [
+        ...prevData.careProviderEmails,
+        { careProviderEmail: "", careProviderDetails: {} },
+      ],
+    }));
+  };
+
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
-
   const handleSave = async (e) => {
     e.preventDefault();
     setIsEditing(false);
-
-    const token = localStorage.getItem("authToken");
-
+  
     if (!token) {
       toast.dismiss();
       toast.error("You are not authenticated. Please log in again.");
       return;
     }
-
-    try {
   
-      const response = await axios.put(
-        `https://api.example.com/agent-landlord/${agentLandlord.id}`, // Replace with real API
-        {
-          name: formData.fullName,
-          phone: formData.phone,
-          email: formData.email,
-          companyName: formData.companyName,
-          agencyLicenseNumber: formData.agencyLicenseNumber,
-          totalPropertiesManaged: formData.totalPropertiesManaged,
-        },
+    // Show loading toast
+    const loadingToast = toast.loading("Updating details...");
+  
+    try {
+      // Step 1: Update basic user details (full name, email, and phone)
+      const userData = {
+        name: formData.fullName,
+        email: formData.email,
+      
+      };
+  
+      const userResponse = await axios.put(
+        `${baseUrl}/auth/users/${agentCareProvider.id}`,
+        userData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      if (response.status === 200) {
-        const updatedData = response.data;
-
-    
-        dispatch(setAgentLandlord(updatedData));
-
-       
-        toast.dismiss();
-        toast.success("Profile updated successfully.");
-      } else {
-        throw new Error("Failed to update profile.");
-      }
+      console.log("User details updated:", userResponse.data);
+  
+      // Step 2: Update agent care provider-specific details
+      const agentCareProviderData = {
+        companyName: formData.companyName,
+        companyType: formData.companyType,
+        phoneNumber: formData.phoneNumber,
+        totalManagedCareProviders: parseInt(formData.totalManagedCareProviders, 10),
+        yearsInBusiness: formData.yearsInBusiness,
+        numberOfEmployees: formData.numberOfEmployees,
+        careProviderEmails: formData.careProviderEmails.map((provider) => ({
+          careProviderEmail: provider.careProviderEmail,
+          careProviderDetails: provider.careProviderDetails || {}, // Including care provider details
+        })),
+      };
+  
+      const agentCareProviderResponse = await axios.put(
+        `${baseUrl}/auth/agent-care-provider/${agentCareProvider.agentCareProviderId}`,
+        agentCareProviderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Agent care provider details updated:", agentCareProviderResponse.data);
+  
+      // Step 3: Fetch updated agent care provider details
+      const updatedAgentCareProviderResponse = await axios.get(
+        `${baseUrl}/auth/users/${agentCareProvider.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      const updatedAgentCareProviderData = updatedAgentCareProviderResponse.data;
+      dispatch(setAgentCareProvider(updatedAgentCareProviderData));
+  
+      // Dismiss loading toast and show success message
+      toast.dismiss(loadingToast);
+      toast.success("Details updated successfully.");
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.dismiss();
-      toast.error("An error occurred while updating your profile.");
+      console.error("Error updating agent care provider details:", error);
+      toast.dismiss(loadingToast);
+      toast.error("An error occurred while updating your details.");
     }
   };
+  
 
   return (
     <div className="editProfile">
-      <div className="editProfileTopBar">
-        <h1>Edit Profile</h1>
-        <button className="editProfileBtn" onClick={handleEditClick}>
-          Edit Details
-        </button>
-      </div>
-      <form className="editProfileForm" onSubmit={handleSave}>
-        <div className="formField">
-          <label htmlFor="fullName">Full Name</label>
-          <input
-            type="text"
-            name="fullName"
-            id="fullName"
-            value={isEditing ? formData.fullName : agentLandlord.fullName}
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder={!isEditing ? agentLandlord.fullName : ""}
-            className={isEditing ? "editable" : ""}
-          />
+        <div className="editProfileTopBar">
+            <h1>Edit Profile</h1>
+            <button className="editProfileBtn" onClick={handleEditClick}>
+                Edit Details
+            </button>
         </div>
-
-        <div className="formField">
-          <label htmlFor="phone">Phone</label>
-          <input
-            type="text"
-            name="phone"
-            id="phone"
-            value={isEditing ? formData.phone : agentLandlord.phoneNumber}
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder={!isEditing ? agentLandlord.phoneNumber : ""}
-            className={isEditing ? "editable" : ""}
-          />
-        </div>
-
-        <div className="formField">
-          <label htmlFor="email">Email Address</label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            value={isEditing ? formData.email : agentLandlord.email}
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder={!isEditing ? agentLandlord.email : ""}
-            className={isEditing ? "editable" : ""}
-          />
-        </div>
-
-        <div className="formField">
-          <label htmlFor="companyName">Company Name</label>
-          <input
-            type="text"
-            name="companyName"
-            id="companyName"
-            value={isEditing ? formData.companyName : agentLandlord.companyName}
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder={!isEditing ? agentLandlord.companyName : ""}
-            className={isEditing ? "editable" : ""}
-          />
-        </div>
-
-        <div className="formField">
-          <label htmlFor="agencyLicenseNumber">Agency License Number</label>
-          <input
-            type="text"
-            name="agencyLicenseNumber"
-            id="agencyLicenseNumber"
-            value={
-              isEditing
-                ? formData.agencyLicenseNumber
-                : agentLandlord.agencyLicenseNumber
-            }
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder={!isEditing ? agentLandlord.agencyLicenseNumber : ""}
-            className={isEditing ? "editable" : ""}
-          />
-        </div>
-
-        <div className="formField">
-          <label htmlFor="totalPropertiesManaged">
-            Total Properties Managed
-          </label>
-          <input
-            type="text"
-            name="totalPropertiesManaged"
-            id="totalPropertiesManaged"
-            value={
-              isEditing
-                ? formData.totalPropertiesManaged
-                : agentLandlord.totalPropertiesManaged
-            }
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder={
-              !isEditing ? agentLandlord.totalPropertiesManaged : ""
-            }
-            className={isEditing ? "editable" : ""}
-          />
-        </div>
-
-        {isEditing && <button type="submit">Save</button>}
-      </form>
+        <form className="editProfileForm" onSubmit={handleSave}>
+            <div className="flexRow">
+                <div className="formField">
+                    <label htmlFor="fullName">Full Name</label>
+                    <input
+                        type="text"
+                        name="fullName"
+                        id="fullName"
+                        value={isEditing ? formData.fullName : agentCareProvider.fullName}
+                        disabled={!isEditing}
+                        onChange={handleChange}
+                        placeholder={!isEditing ? agentCareProvider.fullName : ""}
+                        className={isEditing ? "editable" : ""}
+                    />
+                </div>
+                <div className="formField">
+                    <label htmlFor="phone">Phone</label>
+                    <input
+                        type="text"
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        value={isEditing ? formData.phoneNumber : agentCareProvider.phoneNumber}
+                        disabled={!isEditing}
+                        onChange={handleChange}
+                        placeholder={!isEditing ? agentCareProvider.phoneNumber : ""}
+                        className={isEditing ? "editable" : ""}
+                    />
+                </div>
+            </div>
+            <div className="flexRow">
+                <div className="formField">
+                    <label htmlFor="email">Email Address</label>
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        value={isEditing ? formData.email : agentCareProvider.email}
+                        disabled={!isEditing}
+                        onChange={handleChange}
+                        placeholder={!isEditing ? agentCareProvider.email : ""}
+                        className={isEditing ? "editable" : ""}
+                    />
+                </div>
+                <div className="formField">
+                    <label htmlFor="companyName">Company Name</label>
+                    <input
+                        type="text"
+                        name="companyName"
+                        id="companyName"
+                        value={isEditing ? formData.companyName : agentCareProvider.companyName}
+                        disabled={!isEditing}
+                        onChange={handleChange}
+                        placeholder={!isEditing ? agentCareProvider.companyName : ""}
+                        className={isEditing ? "editable" : ""}
+                    />
+                </div>
+            </div>
+            <div className="flexRow">
+                <div className="formField">
+                    <label htmlFor="companyType">Company Type</label>
+                    <input
+                        type="text"
+                        name="companyType"
+                        id="companyType"
+                        value={isEditing ? formData.companyType : agentCareProvider.companyType}
+                        disabled={!isEditing}
+                        onChange={handleChange}
+                        placeholder={!isEditing ? agentCareProvider.companyType : ""}
+                        className={isEditing ? "editable" : ""}
+                    />
+                </div>
+                <div className="formField">
+                    <label htmlFor="yearsInBusiness">Years in Business</label>
+                    <input
+                        type="number"
+                        name="yearsInBusiness"
+                        id="yearsInBusiness"
+                        value={isEditing ? formData.yearsInBusiness : agentCareProvider.yearsInBusiness}
+                        disabled={!isEditing}
+                        onChange={handleChange}
+                        placeholder={!isEditing ? agentCareProvider.yearsInBusiness : ""}
+                        className={isEditing ? "editable" : ""}
+                    />
+                </div>
+            </div>
+            <div className="flexRow">
+                <div className="formField">
+                    <label htmlFor="numberOfEmployees">Number of Employees</label>
+                    <input
+                        type="number"
+                        name="numberOfEmployees"
+                        id="numberOfEmployees"
+                        value={isEditing ? formData.numberOfEmployees : agentCareProvider.numberOfEmployees}
+                        disabled={!isEditing}
+                        onChange={handleChange}
+                        placeholder={!isEditing ? agentCareProvider.numberOfEmployees : ""}
+                        className={isEditing ? "editable" : ""}
+                    />
+                </div>
+                <div className="formField">
+                    <label htmlFor="totalManagedCareProviders">
+                        Total Managed Care Providers
+                    </label>
+                    <input
+                        type="number"
+                        name="totalManagedCareProviders"
+                        id="totalManagedCareProviders"
+                        value={
+                            isEditing
+                                ? formData.totalManagedCareProviders
+                                : agentCareProvider.totalManagedCareProviders
+                        }
+                        disabled={!isEditing}
+                        onChange={handleChange}
+                        placeholder={!isEditing ? agentCareProvider.totalManagedCareProviders : ""}
+                        className={isEditing ? "editable" : ""}
+                    />
+                </div>
+            </div>
+            {formData.careProviderEmails?.map((provider, index) => (
+                <div className="flexRow" key={index}>
+                    <div className="formField">
+                        <label htmlFor={`careProviderEmail-${index}`}>Care Provider Email</label>
+                        <input
+                            type="email"
+                            name={`careProviderEmail-${index}`}
+                            id={`careProviderEmail-${index}`}
+                            value={isEditing ? provider.careProviderEmail : provider.careProviderEmail}
+                            disabled={!isEditing}
+                            onChange={(e) => handleCareProviderEmailChange(e, index)}
+                            placeholder={!isEditing ? provider.careProviderEmail : ""}
+                            className={isEditing ? "editable" : ""}
+                        />
+                    </div>
+                    {provider.careProviderDetails?.address && (
+                        <div className="formField">
+                            <label htmlFor={`careProviderAddress-${index}`}>Address</label>
+                            <input
+                                type="text"
+                                name={`careProviderAddress-${index}`}
+                                id={`careProviderAddress-${index}`}
+                                value={provider.careProviderDetails.address}
+                                disabled
+                                placeholder={provider.careProviderDetails.address}
+                                className="disabled"
+                            />
+                        </div>
+                    )}
+                </div>
+            ))}
+            {isEditing && (
+                <button
+                    type="button"
+                    onClick={addCareProviderEmail}
+                    className="smallButton"
+                >
+                    Add Another Care Provider
+                </button>
+            )}
+            {isEditing && <button type="submit" className="saveButton">Save</button>}
+        </form>
     </div>
-  );
+);
 };
 
 export default EditProfile1;

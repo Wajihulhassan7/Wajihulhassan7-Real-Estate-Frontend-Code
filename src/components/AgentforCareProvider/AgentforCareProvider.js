@@ -7,12 +7,17 @@ import SideNavbar from "./SideNavbar";
 import KeyStats1 from "./KeyStats1";
 import { useSelector } from "react-redux";
 import SavedProperties from "./SavedProperties";
-import LeasedProperties from "./LeasedProperties";
 import ManageClients from "./ManageClients";
-import DashboardMatchmaker from "../LandLordDasboard/DashboardMatchmaker";
+import LeasedProperties from "../CareProviderDashBoard/LeasedProperties";
+import RequestedProperties from "../LandLordDasboard/RequestedProperties";
+import SearchProperties from "../CareProviderDashBoard/SearchProperties";
+import ProviderDetails from "../AgentDashboard/ProviderDetails";
+import RequestDetails from "../CareProviderDashBoard/RequestDetails";
+import ActiveProperties from "../CareProviderDashBoard/ActiveProperties";
 const AgentforCareProvider = () => {
-  const agentLandlord = useSelector((state) => state.agentLandlord); 
-console.log(agentLandlord);
+  const agentCareProvider = useSelector((state) => state.agentCareProvider); 
+console.log(agentCareProvider);
+ const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const [activeComponent, setActiveComponent] = useState("dashboard");
   const [activeLink, setActiveLink] = useState("dashboard");
@@ -23,19 +28,38 @@ console.log(agentLandlord);
   };
 
   const handleCurrentPropertiesClick = () => {
-    setActiveComponent("currentProperties"); // Switch to edit property component
+    setActiveComponent("currentProperties"); 
     setActiveLink("currentProperties");
   };
 
-  // Function to toggle the 'show' class on the sidebar
+ 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
   };
 
   const handleUploadClick = () => {
-    setActiveComponent("uploadProperty"); // Change to 'uploadProperty' when button is clicked
+    setActiveComponent("uploadProperty"); 
     setActiveLink("uploadProperty");
   };
+
+  const handleDetailsClick = (id) => {
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('viewProperty'); // Switch to edit property component
+    setActiveLink('leasedProperties');
+  };
+  
+  const handleDetailsClickRequest = (id) => {
+    setSelectedPropertyId(id); 
+    setActiveComponent('viewRequest'); 
+    setActiveLink('manageClients');
+  };
+
+  const manageViewDetailsActiveInactive = (email) => {
+    setSelectedPropertyId(email); 
+    setActiveComponent('viewProviderDetails'); 
+    setActiveLink('manageClients');
+  };
+
 
   return (
     <div>
@@ -52,7 +76,7 @@ console.log(agentLandlord);
               </h1>
             </div>
             <p className="text-3xl text-[#154D7C] font-bold font-montserrat mt-8">
-              Welcome back, Anna!
+              Welcome back, {agentCareProvider.fullName}!
             </p>
             <p className="text-xl text-[#C64C7B] font-medium font-raleway mt-2" style={{fontWeight:"800"}}>
             Your Hub for Care-Driven Property Solutions.
@@ -77,19 +101,26 @@ console.log(agentLandlord);
         />
         {activeComponent === "dashboard" && (
           <KeyStats1
-            onUploadClick={handleUploadClick}
-            onCurrentPropertiesClick={handleCurrentPropertiesClick}
+         
           /> 
         )}
         {activeComponent === "profile1" && <EditProfile1 />}
-        {activeComponent === "searchProperties" && <DashboardMatchmaker />}
-        {activeComponent === "manageClients" && <ManageClients />}
+        {activeComponent === "searchProperties" && <SearchProperties />}
+        {activeComponent === "manageClients" && <ManageClients handleViewDetails={manageViewDetailsActiveInactive}  />}
     
-{activeComponent === 'savedProperties' && <SavedProperties />}
-{activeComponent === 'leasedProperties' && <LeasedProperties />}
+{activeComponent === 'savedProperties' && <SavedProperties onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'viewProperty' && <RequestedProperties propertyId={selectedPropertyId} />}
+{activeComponent === 'viewProviderDetails' && <ProviderDetails email={selectedPropertyId} onViewDetailsClick={handleDetailsClickRequest}  />}
+{activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
+{activeComponent === 'activeProperties' && <ActiveProperties onViewDetailsClick={handleDetailsClick} />}
 
       </div>
       <Footer />
+      {/*
+       onActiveRequestsClick={handleActiveRequestsClick}
+          onMatchedPropertiesClick={handleMatchedPropertiesClick} 
+          onNewListingsClick={handleNewListingsClick} */}
     </div>
   );
 };

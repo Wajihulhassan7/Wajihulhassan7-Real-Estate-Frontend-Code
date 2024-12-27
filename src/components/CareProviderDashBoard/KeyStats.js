@@ -12,7 +12,7 @@ function KeyStatsCareProvider() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch requests from /properties/requests
+    
         const requestsResponse = await fetch(`${baseUrl}/properties/requests`);
         const requestsData = await requestsResponse.json();
 

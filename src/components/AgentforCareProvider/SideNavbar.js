@@ -37,6 +37,12 @@ const SideNavbar =({ showMenu, toggleMenu, onLinkClick, activeLink})=>{
         >
           Search Properties 
         </Link>
+         <Link
+                  className={`sideNavLink ${activeLink === 'activeProperties' || activeLink === "viewProperty" ? 'active' : ''}`}
+                  onClick={() => onLinkClick('activeProperties', 'activeProperties')}
+                >
+                  Active Properties 
+                </Link>
         <Link
           className={`sideNavLink ${activeLink === 'manageClients' ? 'active' : ''}`}
           onClick={() => onLinkClick('manageClients', 'manageClients')}
