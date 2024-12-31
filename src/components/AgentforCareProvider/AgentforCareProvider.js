@@ -14,6 +14,9 @@ import SearchProperties from "../CareProviderDashBoard/SearchProperties";
 import ProviderDetails from "../AgentDashboard/ProviderDetails";
 import RequestDetails from "../CareProviderDashBoard/RequestDetails";
 import ActiveProperties from "../CareProviderDashBoard/ActiveProperties";
+import NewListing from "../CareProviderDashBoard/NewListing";
+import MatchedUniversal from "./MatchedUniversal";
+import RequestReceived from "./RequestRceived";
 const AgentforCareProvider = () => {
   const agentCareProvider = useSelector((state) => state.agentCareProvider); 
 console.log(agentCareProvider);
@@ -59,6 +62,22 @@ console.log(agentCareProvider);
     setActiveComponent('viewProviderDetails'); 
     setActiveLink('manageClients');
   };
+ 
+  const handleActiveRequestsClick = () => {
+    setActiveComponent('activeRequests'); 
+    setActiveLink('dashboard');
+  };
+  
+  const  handleNewListingsClick = () => {
+    setActiveComponent('newProperties');
+    setActiveLink('dashboard');
+  };
+  
+  const  handleMatchedPropertiesClick = () => {
+    setActiveComponent('matchedProperties');
+    setActiveLink('dashboard');
+  };
+
 
 
   return (
@@ -101,7 +120,9 @@ console.log(agentCareProvider);
         />
         {activeComponent === "dashboard" && (
           <KeyStats1
-         
+          onActiveRequestsClick={handleActiveRequestsClick}
+          onMatchedPropertiesClick={handleMatchedPropertiesClick} 
+          onNewListingsClick={handleNewListingsClick}
           /> 
         )}
         {activeComponent === "profile1" && <EditProfile1 />}
@@ -114,13 +135,15 @@ console.log(agentCareProvider);
 {activeComponent === 'viewProviderDetails' && <ProviderDetails email={selectedPropertyId} onViewDetailsClick={handleDetailsClickRequest}  />}
 {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
 {activeComponent === 'activeProperties' && <ActiveProperties onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'newProperties' && <NewListing onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'activeRequests' && <RequestReceived onViewDetailsRequest={handleDetailsClickRequest}  />}
+{activeComponent === 'matchedProperties' && <MatchedUniversal  onViewDetailsClick={handleDetailsClick} />}
+
+
 
       </div>
       <Footer />
-      {/*
-       onActiveRequestsClick={handleActiveRequestsClick}
-          onMatchedPropertiesClick={handleMatchedPropertiesClick} 
-          onNewListingsClick={handleNewListingsClick} */}
+     
     </div>
   );
 };

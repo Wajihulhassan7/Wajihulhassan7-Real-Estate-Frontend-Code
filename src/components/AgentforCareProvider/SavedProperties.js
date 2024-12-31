@@ -26,7 +26,7 @@ const SavedProperties = ({onViewDetailsClick}) => {
         const fetchedProperties = data.properties;
 
         const savedProperties = agentCareProvider.savedProperties || [];
-        
+      
         // Convert savedProperties to numbers for comparison, if they are strings
         const savedPropertyIds = savedProperties.map((id) => Number(id)); 
 
@@ -39,7 +39,7 @@ const SavedProperties = ({onViewDetailsClick}) => {
         const uniqueProperties = Array.from(new Set(filteredProperties.map((property) => property.id)))
           .map((id) => filteredProperties.find((property) => property.id === id));
 
-        setProperties(uniqueProperties);
+        setProperties(filteredProperties);
       } catch (error) {
         console.error('Error fetching properties:', error);
       }

@@ -3,13 +3,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { FiSearch } from "react-icons/fi";
 import axios from "axios";
 import { baseUrl } from "../../const/url.const";
+import { logout } from "../../Redux/authSlice";
+import { useNavigate } from "react-router-dom";
 
+import { toast } from 'react-toastify';
 function ManageLandlords({ handleViewDetails }) {
   const careProvider = useSelector((state) => state.agentLandlord);
   const [propertiesByLandlord, setPropertiesByLandlord] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [token, setToken] = useState(null);
-
+ const navigate = useNavigate();
+  const dispatch = useDispatch();
   // Filter landlords based on search query
   const filteredLandlords = careProvider.landlordEmails.filter((landlord) => {
     const email = landlord.landlordDetails ? landlord.landlordDetails.email.toLowerCase() : "";
@@ -31,6 +35,12 @@ function ManageLandlords({ handleViewDetails }) {
       setToken(agentLandlordToken);
     }
   }, []);
+
+// Handle Logout
+const handleLogout = () => {
+  dispatch(logout());    
+  navigate('/login');
+};
 
   useEffect(() => {
     const fetchPropertiesForAllLandlords = async () => {
@@ -63,9 +73,33 @@ function ManageLandlords({ handleViewDetails }) {
 
             landlordData[landlordEmail] = { active, inactive };
           } catch (error) {
-            console.error(`Error fetching data for ${landlordEmail}:`, error);
-            landlordData[landlordEmail] = { active: [], inactive: [] };
+            toast.dismiss();
+        
+            if (error.response) {
+              // Server responded with a status code outside the 2xx range
+              const { status, data } = error.response;
+        
+              console.error(`Error: ${status} - ${data?.message || 'Unknown error'}`);
+        
+              if (status === 401) {
+                // Handle unauthorized error
+                toast.error("Your session has expired. Please log in again.");
+                handleLogout();
+                return;
+              }
+        
+              toast.error(data?.message || "Failed to update details. Please try again.");
+            } else if (error.request) {
+              // No response was received
+              console.error("Error: No response received from the server");
+              toast.error("Server is not responding. Please try again later.");
+            } else {
+              // An error occurred during request setup
+              console.error(`Error: ${error.message}`);
+              toast.error("An error occurred. Please try again.");
+            }
           }
+        
         }
       }
 

@@ -2,13 +2,13 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../../Redux/authSlice';
 import { useDispatch } from 'react-redux';
-
+import { toast } from 'react-toastify';
 const SideNavbar =({ showMenu, toggleMenu, onLinkClick, activeLink})=>{
   const dispatch = useDispatch();
   const navigate = useNavigate();
     const handleLogout = () => {
       dispatch(logout());    
-      alert("Successfully logged out 👋");
+        toast.success("Successfully logged out 👋");
       navigate('/');
     };
 

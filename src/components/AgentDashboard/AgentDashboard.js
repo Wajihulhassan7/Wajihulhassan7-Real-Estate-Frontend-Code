@@ -15,8 +15,8 @@ import ManageLandlords from "./ManageLandlords";
 import RequestReceived from "./RequestReceived";
 import InactiveListing from "../LandLordDasboard/InactiveListing";
 import RequestDetails from "../CareProviderDashBoard/RequestDetails";
-import LeasedProperties from "../CareProviderDashBoard/LeasedProperties";
 import ActiveInactiveListings from "./ActiveInactiveListings";
+import LeasedProperties from "./LeasedProperties";
 
 const AgentDashboard = () => {
   const agentLandlord = useSelector((state) => state.agentLandlord); 

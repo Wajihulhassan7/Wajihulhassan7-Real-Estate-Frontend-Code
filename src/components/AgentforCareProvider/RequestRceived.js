@@ -1,42 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { baseUrl } from '../../const/url.const';
-
 import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../Redux/authSlice';
 function RequestReceived({onViewDetailsRequest}) {
- const dispatch = useDispatch();
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const agentLandlord = useSelector((state) => state.agentLandlord); 
-  const landlord = useSelector((state) => state.landlord); // Access user details from Redux store
-  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sortStatusDropdown, setSortStatusDropdown] = useState(false);
   const [sortPropertyDropdown, setSortPropertyDropdown] = useState(false);
   const [sortOrder, setSortOrder] = useState({ propertyReference: 'asc', status: '' });
- const [token, setToken] = useState(null);
- const [leaseStartDate, setLeaseStartDate] = useState(null);
- const [leaseEndDate, setLeaseEndDate] = useState(null);
- const [isModalOpen, setIsModalOpen] = useState(false);
-  const [requestId, setRequestId] = useState(null);
-  const [property, setProperty] = useState(null);
- useEffect(() => {
-  const landlordToken = localStorage.getItem('authToken');
-  const agentLandlordToken = localStorage.getItem('authTokenAgentLandlord');
-  
-  // Check for tokens and set userId accordingly
-  if (landlordToken) {
-    setToken(landlordToken); // Set token
-    setUserId(landlord.id); // Set userId for landlord
-  } else if (agentLandlordToken) {
-    setToken(agentLandlordToken); // Set token
-    setUserId(agentLandlord.id); // Set userId for agentLandlord
-  }
-}, [landlord, agentLandlord]);
-
+ 
     
     const fetchData = async () => {
       try {
@@ -44,11 +18,15 @@ function RequestReceived({onViewDetailsRequest}) {
         const data = await response.json();
     
         
-        // Filter requests based on userId matching the logged-in user's id
-        const filteredData = data.filter((request) => request.property.userId === userId);
+      // Filter active requests
+      const filteredRequests = data.filter(
+        (request) =>
+          !request.status.includes("Leased") &&  !request.status.includes("Let") &&  !request.status.includes("Resolved")
+      );
     
-        setRequests(filteredData);
-        setFilteredRequests(filteredData);
+    
+        setRequests(filteredRequests);
+        setFilteredRequests(filteredRequests);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -59,14 +37,9 @@ function RequestReceived({onViewDetailsRequest}) {
   
   useEffect(() => {
     fetchData();
-  }, [landlord, agentLandlord, userId]);
+  }, []);
 
  
-   // Handle Logout
-   const handleLogout = () => {
-     dispatch(logout());    
-    
-   };
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -126,216 +99,13 @@ function RequestReceived({onViewDetailsRequest}) {
   const handleViewDetails = (id) => {
     onViewDetailsRequest(id);
   };
-  const handleRespond = async (requestId, property) => {
-    try {
-      // Ensure token exists
-      if (!token) {
-        toast.error("Authentication token not found. Please log in again.");
-        return;
-      }
-  
-      // Determine the agentDetails source
-      const agentDetails =
-        agentLandlord && token === localStorage.getItem("authTokenAgentLandlord")
-          ? {
-              id: agentLandlord.id,
-              email: agentLandlord.email,
-              phoneNumber: agentLandlord.phoneNumber,
-              companyName: agentLandlord.companyName,
-              companyAddress: agentLandlord.companyAddress,
-            }
-          : landlord && token === localStorage.getItem("authToken")
-          ? {
-              id: landlord.id,
-              email: landlord.email,
-              phoneNumber: landlord.phoneNumber,
-              companyName: landlord.companyName,
-              companyAddress: landlord.companyName,
-            }
-          : null;
-  
-      // Ensure agentDetails exists
-      if (!agentDetails) {
-        toast.error("Agent or landlord details not found in the store.");
-        return;
-      }
-  
-      // First API Call: Update Status (for request)
-      const statusPayload = {
-        status: "Resolved", // Or any other status you need
-        requestId, // Add requestId
-        agentDetails, // Add agentDetails
-      };
-  
-      // Send the PUT request for status update
-      const statusResponse = await fetch(`${baseUrl}/auth/status-update/${requestId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(statusPayload),
-      });
-  
-      if (!statusResponse.ok) {
-        if (statusResponse.status === 401) {
-          toast.dismiss();
-          toast.error(`Your session has expired. Please log in again.`);
-          handleLogout();
-          return;
-        }
-        throw new Error("Failed to update request status.");
-      }
-  
-      const statusData = await statusResponse.json();
-      console.log("Status update response:", statusData);
-  
-      // Second API Call: Update Property Details
-      const formData = new FormData();
-  
-      // Append leaseStartDate and leaseEndDate from useState to formData
-      formData.append("leaseStartDate", leaseStartDate || "");
-      formData.append("leaseEndDate", leaseEndDate || "");
-  
-      // Spread the property details into FormData, but set the status to 'Let'
-      Object.entries(property).forEach(([key, value]) => {
-        if (key === "status") {
-          // Override status field with 'Let'
-          formData.append(key, "Let");
-        } else if (Array.isArray(value)) {
-          // Handle arrays
-          value.forEach((item) => {
-            if (item instanceof File) {
-              formData.append(key, item); // Append file arrays (e.g., photos, floorPlans)
-            } else {
-              formData.append(key, item); // Append other array items
-            }
-          });
-        } else if (typeof value === "boolean") {
-          // Convert booleans to strings
-          formData.append(key, value.toString());
-        } else if (value instanceof File) {
-          // Handle file uploads
-          formData.append(key, value);
-        } else {
-          // Append other key-value pairs
-          formData.append(key, value || "");
-        }
-      });
-  
-      // Make PUT request with FormData
-      const propertyResponse = await fetch(`${baseUrl}/properties/${property.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-  
-      if (!propertyResponse.ok) {
-        if (propertyResponse.status === 401) {
-          toast.dismiss();
-          toast.error(`Your session has expired. Please log in again.`);
-          handleLogout();
-          return;
-        }
-        throw new Error("Failed to update property.");
-      }
-  
-      const propertyData = await propertyResponse.json();
-      toast.success("Updated successfully!");
-      console.log("Property update response:", propertyData);
-      fetchData();
-  
-    } catch (error) {
-      console.error("Error updating status or property:", error);
-      toast.error("Failed to update. Please try again.");
-    }
-  };
-  
 
-
-  // Open the modal and set requestId and property
-  const handleOpenModal = (id, prop) => {
-    setRequestId(id);
-    setProperty(prop);
-    setIsModalOpen(true);
-  };
-
-  // Close the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  // Handle form submission
-  const handleSubmit = () => {
-    if (leaseStartDate && leaseEndDate) {
-      handleRespond(requestId, property);
-      handleCloseModal();
-      setLeaseEndDate(null);
-      setLeaseStartDate(null);
-    
-    } else {
-      alert("Please fill in both lease start and end dates.");
-    }
-  };
 
   return (
     <div>
       <h2 className="text-2xl font-extrabold font-montserrat text-center pb-4 px-8 text-[#154D7C] mb-6">
-        Requests Received
+        Active Requests
       </h2>
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" style={{zIndex:'999'}}>
-          <div className="bg-white p-6 rounded-md shadow-lg w-96">
-            <h2 className="text-xl font-semibold mb-4">Enter Lease Dates</h2>
-
-            {/* Lease Start Date */}
-            <div className="mb-4">
-              <label htmlFor="leaseStartDate" className="block text-sm font-medium mb-2">
-                Lease Start Date
-              </label>
-              <input
-                type="date"
-                id="leaseStartDate"
-                value={leaseStartDate || ""}
-                onChange={(e) => setLeaseStartDate(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-
-            {/* Lease End Date */}
-            <div className="mb-4">
-              <label htmlFor="leaseEndDate" className="block text-sm font-medium mb-2">
-                Lease End Date
-              </label>
-              <input
-                type="date"
-                id="leaseEndDate"
-                value={leaseEndDate || ""}
-                onChange={(e) => setLeaseEndDate(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={handleCloseModal}
-                className="bg-gray-300 px-4 py-2 rounded-full text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm"
-              >
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <div className="flex flex-col items-center space-y-6 mb-8">
         {/* Search Section */}
         <div className="relative w-full max-w-xs sm:max-w-md lg:max-w-lg pb-4">
@@ -436,11 +206,7 @@ function RequestReceived({onViewDetailsRequest}) {
           <button className='requestedProperties requestedPropertiesViewbtn'>
             View Request
           </button>
-          <button className='requestedProperties requestedPropertiesRespondBtn'
-        onClick={() => handleOpenModal(request.id, request.property)}
-      >
-        Respond
-      </button>
+        
         </div>
       </div>
     ))
@@ -480,12 +246,7 @@ function RequestReceived({onViewDetailsRequest}) {
                   >
                     View Request
                   </button>
-                  <button
-        onClick={() => handleOpenModal(request.id, request.property)}
-         className='requestedProperties requestedPropertiesRespondBtn'
-      >
-        Respond
-      </button>
+               
                 </div>
               </td>
             </tr>

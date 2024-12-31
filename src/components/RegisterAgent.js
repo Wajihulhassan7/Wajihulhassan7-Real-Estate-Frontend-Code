@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import img from '../assets/img/houses/house11.png';
+import img from '../assets/new_home_images/ronnie-george-z11gbBo13ro-unsplash.jpg';
 import { baseUrl } from "../const/url.const";
 import { useNavigate } from "react-router-dom";
 
@@ -108,7 +108,7 @@ const RegistrationAgent = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full min-h-screen w-full bg-[#212727]">
       <div className="lg:flex-1 flex flex-col justify-center items-center bg-[#1762A9] p-6 lg:p-8 text-center">
-        <img src={img} alt="Welcome" className="rounded-lg shadow-lg w-3/4 lg:w-1/2 mb-4" />
+        <img src={img} alt="Welcome" className="rounded-lg shadow-lg w-3/4 lg:w-1/2 mb-4 registerSectionImg" />
         <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-4 mt-10">Agent Registeration</h1>
         <p className="text-white text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-12">
         For agents dedicated to sourcing housing for care providers, PropertyConnectHub is your partner in finding compliant, reliable options faster. Join our network to connect with landlords and listings tailored for the care sector, reducing time spent on searches and giving you direct access to trusted properties. 

@@ -5,10 +5,13 @@ import axios from "axios";
 import { baseUrl } from "../../const/url.const";
 import { setCareProvider } from "../../Redux/careProviderSlice";
 import { toast } from 'react-toastify'; 
+import { logout } from "../../Redux/authSlice";
+import { useNavigate } from "react-router-dom";
 
 
 const EditProfileCareProvider = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const careprovider = useSelector((state) => state.careProvider);
   const token = localStorage.getItem("authTokenCareProvider"); 
   const [isEditing, setIsEditing] = useState(false);
@@ -62,6 +65,13 @@ const EditProfileCareProvider = () => {
   const handleEditClick = () => {
     setIsEditing(true);
   };
+  
+  // Handle Logout
+  const handleLogout = () => {
+    dispatch(logout());    
+    navigate('/login');
+  };
+    
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -92,7 +102,6 @@ const EditProfileCareProvider = () => {
           },
         }
       );
-      console.log("User details updated:", userResponse.data);
   
       // Send other details to /auth/careprovider/:providerId
       const careProviderData = {
@@ -122,8 +131,8 @@ const EditProfileCareProvider = () => {
           },
         }
       );
-      console.log("Care provider details updated:", careProviderResponse.data);
-  
+    
+      
       // Fetch the updated care provider data
       const updatedCareProviderResponse = await fetch(`${baseUrl}/auth/users/${careprovider.id}`, {
         method: 'GET',
@@ -145,12 +154,36 @@ const EditProfileCareProvider = () => {
       toast.dismiss(loadingToast);
       toast.success("Care provider details updated successfully.");
   
-    } catch (error) {
-      console.error("Error:", error);
-      toast.dismiss(loadingToast);
-      toast.error("An error occurred while updating your details.");
-    }
-  };
+    }  catch (error) {
+        toast.dismiss(loadingToast);
+    
+        if (error.response) {
+          // Server responded with a status code outside the 2xx range
+          const { status, data } = error.response;
+    
+          console.error(`Error: ${status} - ${data?.message || 'Unknown error'}`);
+    
+          if (status === 401) {
+            // Handle unauthorized error
+            toast.error("Your session has expired. Please log in again.");
+            handleLogout();
+            return;
+          }
+    
+          toast.error(data?.message || "Failed to update details. Please try again.");
+        } else if (error.request) {
+          // No response was received
+          console.error("Error: No response received from the server");
+          toast.error("Server is not responding. Please try again later.");
+        } else {
+          // An error occurred during request setup
+          console.error(`Error: ${error.message}`);
+          toast.error("An error occurred. Please try again.");
+        }
+
+        
+      }
+    };
   
   
   return (

@@ -5,49 +5,31 @@ import { useSelector } from 'react-redux';
 
 const LeasedProperties = ({  onViewDetailsClick }) => {
   const [properties, setProperties] = useState([]);
-  const careProvider = useSelector((state) => state.careProvider); 
+ const agentLandlord = useSelector((state) => state.agentLandlord); 
     
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetch(`${baseUrl}/properties/requests`);
+        const response = await fetch(`${baseUrl}/properties`);
         if (!response.ok) {
           throw new Error("Failed to fetch property requests.");
         }
   
         const data = await response.json();
   
-        // Check if the response contains an error message
-        if (data.message && data.message === "Error fetching all requests") {
-          throw new Error("Error fetching all property requests.");
-        }
-  
-        // Filter listings by careProvider ID and status
-        const filteredProperties = data
-          .filter((item) => {
-            // Check if request status includes "Resolved" or "Leased"
-            const requestStatus = item.status.includes('Resolved') || item.status.includes('Leased');
-  
-            // Check if property status is "Let" or "Leased"
-            const propertyStatus = item.property.status === 'Let' || item.property.status === 'Leased';
-  
-            // Return listings that match both conditions
-            return item.userId === careProvider.id && requestStatus && propertyStatus;
-          })
-          .map((item) => item.property) // Extract the property data
-          .filter((value, index, self) => 
-            index === self.findIndex((t) => t.id === value.id)
-          );
-  
-        // Set the filtered property data to state
-        setProperties(filteredProperties);
+const leasedProperties = data.properties.filter(
+    (property) => 
+      (property.status === 'Leased' || property.status === 'Let') && 
+      property.userId === agentLandlord.id
+  );
+        setProperties(leasedProperties);
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
     };
   
     fetchRequests();
-  }, [careProvider.id]);
+  }, [agentLandlord.id]);
   
   
   const handleViewDetails = (id) => {

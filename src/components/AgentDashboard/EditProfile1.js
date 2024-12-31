@@ -109,7 +109,7 @@ const EditProfile1 = () => {
           },
         }
       );
-      console.log("User details updated:", userResponse.data);
+      
   
       // Step 2: Update agent landlord-specific details
       const agentLandlordData = {
@@ -133,7 +133,8 @@ const EditProfile1 = () => {
           },
         }
       );
-      console.log("Agent landlord details updated:", agentLandlordResponse.data);
+    
+       
   
       // Step 3: Fetch updated agent landlord details
       const updatedAgentLandlordResponse = await axios.get(
@@ -152,9 +153,31 @@ const EditProfile1 = () => {
       toast.dismiss(loadingToast);
       toast.success("Details updated successfully.");
     } catch (error) {
-      console.error("Error updating agent landlord details:", error);
       toast.dismiss(loadingToast);
-      toast.error("An error occurred while updating your details.");
+  
+      if (error.response) {
+        // Server responded with a status code outside the 2xx range
+        const { status, data } = error.response;
+  
+        console.error(`Error: ${status} - ${data?.message || 'Unknown error'}`);
+  
+        if (status === 401) {
+          // Handle unauthorized error
+          toast.error("Your session has expired. Please log in again.");
+          handleLogout();
+          return;
+        }
+  
+        toast.error(data?.message || "Failed to update details. Please try again.");
+      } else if (error.request) {
+        // No response was received
+        console.error("Error: No response received from the server");
+        toast.error("Server is not responding. Please try again later.");
+      } else {
+        // An error occurred during request setup
+        console.error(`Error: ${error.message}`);
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
   

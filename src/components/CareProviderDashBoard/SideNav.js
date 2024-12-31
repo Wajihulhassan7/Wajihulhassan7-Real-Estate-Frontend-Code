@@ -2,13 +2,13 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../../Redux/authSlice';
 import { useDispatch } from 'react-redux';
-
+import { toast } from 'react-toastify';
 const SideNavCareProvider = ({ showMenu, toggleMenu, onLinkClick, activeLink }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
     const handleLogout = () => {
       dispatch(logout());    
-      alert("Successfully logged out 👋");
+        toast.success("Successfully logged out 👋");
       navigate('/');
     };
 
@@ -62,10 +62,10 @@ const SideNavCareProvider = ({ showMenu, toggleMenu, onLinkClick, activeLink }) 
           Leased Properties
         </Link>
         <Link
-          className={`sideNavLink ${activeLink === 'requestProperty' || activeLink === 'viewPropertyInactive' ? 'active' : ''}`}
-          onClick={() => onLinkClick('requestProperty', 'requestProperty')}
+          className={`sideNavLink ${activeLink === 'notifications' ? 'active' : ''}`}
+          onClick={() => onLinkClick('notifications', 'notifications')}
         >
-          Request Property
+         Notifications
         </Link>
         <Link
           className={`sideNavLink ${activeLink === 'logout' ? 'active' : ''}`}

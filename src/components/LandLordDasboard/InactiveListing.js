@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../Redux/authSlice";
 import { baseUrl } from "../../const/url.const";
-
+import { toast } from 'react-toastify';
 const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -163,12 +163,12 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
         console.error(`Error: ${response.status} - ${errorMessage}`);
   
         if (response.status === 401) {
-          // Handle unauthorized error
-          alert("Your session has expired. Please log in again.");
+          toast.dismiss();
+          toast.error(`Your session has expired. Please log in again.`);
           handleLogout();
           return;
         }
-  
+
         throw new Error(`Failed to update: ${response.statusText}`);
       }
   

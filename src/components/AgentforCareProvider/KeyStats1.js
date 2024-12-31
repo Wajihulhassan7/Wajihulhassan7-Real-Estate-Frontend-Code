@@ -15,11 +15,11 @@ function KeyStats1({  onActiveRequestsClick, onMatchedPropertiesClick , onNewLis
         // Fetch requests from /properties/requests
         const requestsResponse = await fetch(`${baseUrl}/properties/requests`);
         const requestsData = await requestsResponse.json();
-
+ 
         // Filter active requests
         const filteredRequests = requestsData.filter(
           (request) =>
-            !request.status.includes("Leased")
+            !request.status.includes("Leased") &&  !request.status.includes("Let") &&  !request.status.includes("Resolved")
         );
         setActiveRequests(filteredRequests.length);
 
@@ -35,7 +35,7 @@ function KeyStats1({  onActiveRequestsClick, onMatchedPropertiesClick , onNewLis
         setNewListings(newProperties.length);
 
         // Calculate matched properties
-        const matched = filteredRequests.filter((request) =>
+        const matched = requestsData.filter((request) =>
           propertiesData.properties.some(
             (property) =>
               property.city === request.city &&

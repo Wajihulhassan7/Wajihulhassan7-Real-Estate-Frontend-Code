@@ -90,19 +90,43 @@ const SearchProperties = () => {
 
   const handleFiltersChange = () => {
     let filtered = properties;
-
+  
+    // Filter by city
     if (city) {
       filtered = filtered.filter((property) => property.city === city);
     }
+  
+    // Filter by property type
     if (propertyType) {
       filtered = filtered.filter((property) => property.propertyType === propertyType);
     }
+  
+    // Filter by number of bedrooms
     if (numOfBedrooms) {
       filtered = filtered.filter((property) => property.numOfBedrooms === parseInt(numOfBedrooms));
     }
-
+  
+    // Filter by postal code
+    if (postcode) {
+      filtered = filtered.filter((property) =>
+        property.postalCode.toString().startsWith(postcode)
+      );
+    }
+  
     setFilteredProperties(filtered);
   };
+  
+    const handleRemoveFilters = () => {
+      // Reset all filters
+      setCity('');
+      setPropertyType('');
+      setNumOfBedrooms('');
+      setPostcode('');
+    
+      // Reset the filtered properties to the full list
+      setFilteredProperties(properties);
+    };
+    
 
   return (
     <div className="matchMakerWrapper">
@@ -121,13 +145,14 @@ const SearchProperties = () => {
 
         <p>Use the filters to customize your search and find properties that match your specific criteria.</p>
 
+       
         <div className="matchMakerButtonsWrapper">
           <select
             className="border rounded-lg matchMakerSelect"
             name="city"
             value={city}
             onChange={(e) => {
-              setCity(e.target.value);
+            setCity(e.target.value);
               handleFiltersChange();
             }}
           >
@@ -257,11 +282,40 @@ const SearchProperties = () => {
             ))}
           </select>
         </div>
+      
+      
+        <div style={{ display: 'flex', gap: '10px' }}>
+  <button
+    onClick={handleFiltersChange}
+    className="text-white rounded-lg px-6 py-2 font-bold transition-all duration-300"
+    style={{
+      backgroundColor: '#a53864',
+    }}
+    onMouseEnter={(e) => (e.target.style.backgroundColor = '#912e4c')}
+    onMouseLeave={(e) => (e.target.style.backgroundColor = '#a53864')}
+  >
+    Search
+  </button>
+  {(city || propertyType || numOfBedrooms || postcode) && (
+  <button
+    onClick={handleRemoveFilters}
+    className="text-white rounded-lg px-6 py-2 font-bold transition-all duration-300"
+    style={{
+      backgroundColor: '#154D7C', // Default background color
+    }}
+    onMouseEnter={(e) => (e.target.style.backgroundColor = '#1D3557')} // Hover background color
+    onMouseLeave={(e) => (e.target.style.backgroundColor = '#154D7C')} // Revert to default
+  >
+    Reset Filters
+  </button>
+)}
 
-        {/* Display message when no properties match the filters */}
+
+</div>
+
         {filteredProperties.length === 0 && (
           <div className="noResultsMessage">
-            <p>No properties found matching your search criteria.</p>
+            <p style={{color:'red'}}>No properties found matching your search criteria.</p>
           </div>
         )}
 

@@ -160,12 +160,12 @@ const handleLogout = () => {
         console.error(`Error: ${response.status} - ${errorMessage}`);
   
         if (response.status === 401) {
-          // Handle unauthorized error
-          alert("Your session has expired. Please log in again.");
-          handleLogout();
           toast.dismiss();
+          toast.error(`Your session has expired. Please log in again.`);
+          handleLogout();
           return;
         }
+
   
         throw new Error(`Failed to update: ${response.statusText}`);
       }

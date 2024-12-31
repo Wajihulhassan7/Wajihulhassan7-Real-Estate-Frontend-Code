@@ -6,7 +6,7 @@ import "../assets/css/header/header.css";
 import Logo from "../../src/assets/images/Property-care-hub-logo.png";
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../Redux/authSlice';
-
+import { toast } from 'react-toastify';
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const Header = () => {
   
   const handleLogout = () => {
     dispatch(logout());    
-    alert("Successfully logged out 👋");
+   toast.success("Successfully logged out 👋");
     navigate('/');
   };
   

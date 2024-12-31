@@ -8,7 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { baseUrl } from "../../../const/url.const";
 
-const RequestPropertyForm = ({ onUpdateSuccess}) => {
+const RequestPropertyForm = ({ onUpdateSuccess, propertyId}) => {
+
   const careprovider = useSelector((state) => state.careProvider); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -45,6 +46,7 @@ const RequestPropertyForm = ({ onUpdateSuccess}) => {
       city: "",
       latitude: "",
       longitude: "",
+      propertyId:propertyId,
     });
   
   
@@ -132,11 +134,12 @@ const handleSubmit = async () => {
       console.error(`Error: ${response.status} - ${errorMessage}`);
 
       if (response.status === 401) {
-        // Handle unauthorized error
-        alert("Your session has expired. Please log in again.");
+        toast.dismiss();
+        toast.error(`Your session has expired. Please log in again.`);
         handleLogout();
         return;
       }
+
 
       throw new Error(`Failed to update: ${response.statusText}`);
     }

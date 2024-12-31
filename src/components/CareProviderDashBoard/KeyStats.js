@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { baseUrl } from "../../const/url.const";
 
-function KeyStatsCareProvider() {
+function KeyStatsCareProvider({activeRequestsClick, matchedPropertiesClick, onNewListingsClick}) {
   const careProvider = useSelector((state) => state.careProvider);
   console.log(careProvider);
   const [activeRequests, setActiveRequests] = useState(0);
@@ -12,49 +12,48 @@ function KeyStatsCareProvider() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-    
+        // Fetch active requests
         const requestsResponse = await fetch(`${baseUrl}/properties/requests`);
         const requestsData = await requestsResponse.json();
-
-        // Filter active requests
+  
         const filteredRequests = requestsData.filter(
           (request) =>
             request.userId === careProvider.id &&
-            !request.status.includes("Leased")
+            !request.status.includes("Leased") &&
+            !request.status.includes("Let")
         );
         setActiveRequests(filteredRequests.length);
-
+  
         // Fetch properties from /properties
         const propertiesResponse = await fetch(`${baseUrl}/properties`);
         const propertiesData = await propertiesResponse.json();
-
+  
         // Calculate new listings (created today)
         const today = new Date().toISOString().split("T")[0]; // Get today's date in ISO format
         const newProperties = propertiesData.properties.filter(
           (property) => property.createdAt.split("T")[0] === today
         );
         setNewListings(newProperties.length);
-
-        // Calculate matched properties
-        const matched = filteredRequests.filter((request) =>
-          propertiesData.properties.some(
-            (property) =>
-              property.city === request.city &&
-              property.propertyType === request.propertyType &&
-              property.postalCode === request.postalCode
+  
+        // Calculate matched properties based on postal code
+        const matchedProperties = propertiesData.properties.filter((property) =>
+          filteredRequests.some(
+            (request) =>   property.city === request.city &&
+            property.propertyType === request.propertyType &&
+            property.postalCode === request.postalCode
           )
         );
-        setMatchedProperties(matched.length);
+        setMatchedProperties(matchedProperties.length);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
+  
     if (careProvider.id) {
       fetchData();
     }
   }, [careProvider.id]);
-
+  
   return (
     <div
       className="flex flex-col items-center justify-center space-y-8 p-4"
@@ -70,7 +69,7 @@ function KeyStatsCareProvider() {
           <p className="text-5xl font-inria font-light text-[#000000] my-4">
             {activeRequests}
           </p>
-          <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300">
+          <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={activeRequestsClick}>
             View All
           </button>
         </div>
@@ -83,7 +82,7 @@ function KeyStatsCareProvider() {
           <p className="text-5xl font-inria font-light text-[#000000] my-4">
             {matchedProperties}
           </p>
-          <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300">
+          <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={matchedPropertiesClick}>
             View All
           </button>
         </div>
@@ -96,8 +95,8 @@ function KeyStatsCareProvider() {
           <p className="text-5xl font-inria font-light text-[#000000] my-4">
             {newListings}
           </p>
-          <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300">
-            Update
+          <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={onNewListingsClick}>
+            View All
           </button>
         </div>
       </div>

@@ -15,6 +15,9 @@ import { useSelector } from 'react-redux';
 import RequestDetails from './RequestDetails.jsx';
 import ActiveProperties from './ActiveProperties.js';
 import RequestedProperties from '../LandLordDasboard/RequestedProperties.js';
+import MatchedProperties from './MatchedProperties.js';
+import NewListing from './NewListing.js';
+import Notifications from './Notifications.js';
 function CareProviderDashBoard() {
   const careprovider = useSelector((state) => state.careProvider); 
   console.log(careprovider);
@@ -42,7 +45,21 @@ function CareProviderDashBoard() {
     setActiveComponent('viewRequest'); // Switch to edit Request component
     setActiveLink('viewRequest');
   };
-
+  
+  
+  const handleActiveRequestsClick = () => {
+    setActiveComponent('myRequests'); // Update the state to render the CurrentProperties component
+    setActiveLink('myRequests');
+  };
+  
+  
+  
+  
+  const handleUploadingRequestClick = (id) => {
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('requestProperty'); // Switch to edit property component
+    setActiveLink('activeProperties');
+  };
   
   const handleDetailsClick = (id) => {
     setSelectedPropertyId(id); // Store the selected property ID
@@ -54,6 +71,16 @@ function CareProviderDashBoard() {
     setActiveComponent('myRequests'); // Update the state to render the CurrentProperties component
     setActiveLink('myRequests');
   };
+  const handleMatchedPropertiesClick = () => {
+    setActiveComponent('matchedProperties'); // Update the state to render the CurrentProperties component
+    setActiveLink('dashboard');
+  };
+  
+  const handleNewListingsClick = () => {
+    setActiveComponent('newProperties'); // Update the state to render the CurrentProperties component
+    setActiveLink('dashboard');
+  };
+  
   
   return (
     <div className="bg-white shadow-lg rounded-lg ">
@@ -96,17 +123,24 @@ function CareProviderDashBoard() {
 <div className='dashboardDynamicSection'>     
 
 <SideNavCareProvider showMenu={showMenu} toggleMenu={toggleMenu} onLinkClick={handleLinkClick} activeLink={activeLink} />
-{activeComponent === 'dashboard' && <KeyStatsCareProvider  />}
+{activeComponent === 'dashboard' && <KeyStatsCareProvider activeRequestsClick={handleActiveRequestsClick} 
+matchedPropertiesClick={handleMatchedPropertiesClick}
+onNewListingsClick={handleNewListingsClick}
+/>}
 {activeComponent === 'profile' && <EditProfileCareProvider />}
 
 {activeComponent === 'savedProperties' && <SavedProperties onViewDetailsClick={handleDetailsClick} />}
 {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick} />}
-{activeComponent === 'requestProperty' && <RequestPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
+{activeComponent === 'requestProperty' && <RequestPropertyForm onUpdateSuccess={handleUpdateSuccess} propertyId={selectedPropertyId} />}
 {activeComponent === 'myRequests' && <MyRequests onViewDetailsRequest={handleViewDetailsRequest} />}
 {activeComponent === 'searchProperties' && <SearchProperties />}
 {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
-{activeComponent === 'activeProperties' && <ActiveProperties onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'activeProperties' && <ActiveProperties onViewDetailsClick={handleDetailsClick} onUploadingRequestClick={handleUploadingRequestClick} />}
+{activeComponent === 'matchedProperties' && <MatchedProperties />}
 {activeComponent === 'viewProperty' && <RequestedProperties propertyId={selectedPropertyId} />}
+{activeComponent === 'newProperties' && <NewListing onViewDetailsClick={handleDetailsClick} />}
+
+{activeComponent === 'notifications' && <Notifications />}
     </div>
     
     

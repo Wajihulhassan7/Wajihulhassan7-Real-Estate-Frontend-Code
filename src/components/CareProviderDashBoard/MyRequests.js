@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import { baseUrl } from "../../const/url.const";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../Redux/authSlice";
 
 const MyRequests = ({onViewDetailsRequest}) => {
   const careProvider = useSelector((state) => state.careProvider); // Ensure correct state mapping
   const [listings, setListings] = useState([]);
   const [visibleListings, setVisibleListings] = useState(5);
-
-  // Fetch data from the API
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -16,18 +18,32 @@ const MyRequests = ({onViewDetailsRequest}) => {
         if (!response.ok) {
           throw new Error("Failed to fetch property requests.");
         }
-        const data = await response.json(); 
+        
+        const data = await response.json();
+  
+        // Check if the response contains an error message
+        if (data.message && data.message === "Error fetching all requests") {
+          throw new Error("Error fetching all property requests.");
+        }
+  
         // Filter listings by careProvider ID
         const filteredListings = data.filter((item) => item.userId === careProvider.id);
         setListings(filteredListings);
       } catch (error) {
         console.error("Error fetching requests:", error);
-        toast.error("Unable to fetch property requests.");
+       
       }
     };
-
+  
     fetchRequests();
   }, [careProvider.id]);
+  
+
+// Handle Logout
+const handleLogout = () => {
+  dispatch(logout());    
+  navigate('/login');
+};
 
   // Delete request
 const handleDelete = async (id) => {
@@ -46,9 +62,20 @@ const handleDelete = async (id) => {
       },
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to delete the property request.");
-    }
+       if (!response.ok) {
+              const errorMessage = await response.text();
+              console.error(`Error: ${response.status} - ${errorMessage}`);
+        
+              if (response.status === 401) {
+                toast.dismiss();
+                toast.error(`Your session has expired. Please log in again.`);
+                handleLogout();
+                return;
+              }
+        
+        
+              throw new Error(`Failed to update: ${response.statusText}`);
+            }
 
     // Update the listings by removing the deleted item
     setListings((prevListings) => prevListings.filter((listing) => listing.id !== id));

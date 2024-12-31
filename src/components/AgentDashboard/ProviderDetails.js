@@ -39,7 +39,7 @@ const ProviderDetails = ({ email, onViewDetailsClick }) => {
             );
             
             const inactive = properties.filter((property) =>
-              property.userId === providerId && property.status.includes("Resolved")
+              property.userId === providerId && (property.status.includes("Resolved") || property.status.includes("Leased"))
             );
             
   

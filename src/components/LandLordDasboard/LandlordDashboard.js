@@ -14,6 +14,9 @@ import RequestedProperties from './RequestedProperties';
 import UploadPropertyForm from './UploadPropertyForm';
 import EditPropertyForm from './EditProperty/EditPropertyForm';
 import { useSelector } from 'react-redux';
+import RequestReceived from '../AgentDashboard/RequestReceived';
+import RequestDetails from '../CareProviderDashBoard/RequestDetails';
+import LeasedProperties from '../CareProviderDashBoard/LeasedProperties';
 
 const LandlordDashboard = () => {
   const landlord = useSelector((state) => state.landlord); // Access user details from Redux store
@@ -67,6 +70,23 @@ console.log(landlord);
   };
   
 
+  const handleRequestsReceivedClick = () => {
+    setActiveComponent("requestreceived"); 
+    setActiveLink("dashboard");
+  };
+
+  const handleViewDetailsRequest = (id) => {
+    setSelectedPropertyId(id); 
+    setActiveComponent('viewRequest'); 
+    setActiveLink('dashboard');
+  };
+
+  
+  const  handleLeasedPropertiesClick = () => {
+    setActiveComponent("leasedProperties"); 
+    setActiveLink("dashboard");
+  };
+
   return (
     <div className="shadow-lg rounded-lg">
       <Header />
@@ -103,7 +123,10 @@ console.log(landlord);
 <div className='dashboardDynamicSection'>     
 
 <SideNav showMenu={showMenu} toggleMenu={toggleMenu} onLinkClick={handleLinkClick} activeLink={activeLink} />
-{activeComponent === 'dashboard' && <KeyStats onUploadClick={handleUploadClick} onCurrentPropertiesClick={handleCurrentPropertiesClick} />}
+{activeComponent === 'dashboard' && <KeyStats onUploadClick={handleUploadClick} onCurrentPropertiesClick={handleCurrentPropertiesClick} 
+   onRequestsReceivedClick={handleRequestsReceivedClick}
+   onLeasedPropertiesClick={handleLeasedPropertiesClick}
+/>}
 {activeComponent === 'profile' && <EditProfile />}
 {activeComponent === 'matchmaker' && <SearchforCareProviders1 onViewDetailsClick={handleDetailsClick} />}
 {activeComponent === 'uploadProperty' && <UploadPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
@@ -114,6 +137,9 @@ console.log(landlord);
       {activeComponent === 'editProperty' && <EditPropertyForm propertyId={selectedPropertyId} onUpdateSuccess={handleUpdateSuccess} />}
       {activeComponent === 'viewProperty' && <RequestedProperties propertyId={selectedPropertyId} />}
       {activeComponent === 'viewPropertyInactive' && <RequestedProperties propertyId={selectedPropertyId} />}
+      {activeComponent === "requestreceived" && <RequestReceived  onViewDetailsRequest={handleViewDetailsRequest} />}
+      {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
+      {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick}  />}
     </div>
     
       

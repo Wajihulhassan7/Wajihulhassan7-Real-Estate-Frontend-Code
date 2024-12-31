@@ -47,7 +47,7 @@ function ManageClients({ handleViewDetails }) {
   const fetchMatchedProperties = async (userRequests) => {
     try {
       const propertiesResponse = await axios.get(`${baseUrl}/properties`);
-      const properties = propertiesResponse.data;
+      const properties = propertiesResponse.data.properties;
 
       const matched = userRequests.map((request) => {
         return properties.filter((property) => {

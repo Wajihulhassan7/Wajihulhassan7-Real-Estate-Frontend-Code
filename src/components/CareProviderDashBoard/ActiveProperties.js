@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {  useDispatch, useSelector } from 'react-redux'; 
-import axios from 'axios'; // Use axios to fetch data
+import axios from 'axios'; 
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../Redux/authSlice';
 import { baseUrl } from '../../const/url.const';
 import { setCareProvider } from '../../Redux/careProviderSlice';
 import { setAgentCareProvider } from '../../Redux/agentCareProviderSlice';
+import { toast } from 'react-toastify';
 
-const ActiveProperties = ({  onViewDetailsClick }) => {
+const ActiveProperties = ({  onViewDetailsClick, onUploadingRequestClick}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [properties, setProperties] = useState([]);
@@ -81,9 +82,23 @@ const ActiveProperties = ({  onViewDetailsClick }) => {
           }),
         });
     
-        if (response.ok) {
-          alert('Property bookmarked successfully!');
+        if (!response.ok) {
+          const errorMessage = await response.text();
+          console.error(`Error: ${response.status} - ${errorMessage}`);
     
+          if (response.status === 401) {
+            toast.dismiss();
+            toast.error(`Your session has expired. Please log in again.`);
+            handleLogout();
+            return;
+          }
+    
+    
+          throw new Error(`Failed to update: ${response.statusText}`);
+        }
+        if (response.ok) {
+           toast.success('Property bookmarked successfully!');
+          setVisibleDropdown(null);
           // After success, fetch the updated user data
           const userResponse = await fetch(fetchUrl, {
             headers: {
@@ -134,6 +149,9 @@ const ActiveProperties = ({  onViewDetailsClick }) => {
       return <div>Loading...</div>; 
     }
     
+  const handleUploadRequestClick = (id) => {
+    onUploadingRequestClick(id);
+  };
     return (
       <div className="bg-opacity-14 p-8 pb-14 shadow-md" style={{ borderTopLeftRadius: '30px', width:'100%', background: 'rgba(198, 76, 123, 0.10)' }}>
         <h2 className="text-2xl font-extrabold font-montserrat py-4 px-8 text-[#2E86AB] mb-6">Active Properties</h2>
@@ -178,6 +196,10 @@ const ActiveProperties = ({  onViewDetailsClick }) => {
         className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100`}       onClick={() => handleBookmarkClick(property.id)} >
        Bookmark
       </button>
+   {careprovider.id &&  <button
+        className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100`}       onClick={() => handleUploadRequestClick(property.id)} >
+       Make a Request
+      </button> }
     </div>
   )}
   

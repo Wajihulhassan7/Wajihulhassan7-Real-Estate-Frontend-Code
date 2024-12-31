@@ -29,7 +29,6 @@ function KeyStats1({ onUploadClick, onManageLandlordsClick, onRequestsReceivedCl
     fetchProperties();
   }, []);
 
-
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -38,7 +37,10 @@ function KeyStats1({ onUploadClick, onManageLandlordsClick, onRequestsReceivedCl
           throw new Error('Failed to fetch properties');
         }
         const data = await response.json();
-        setRequests(data);
+         // Filter data to only include requests that belong to the logged-in landlord
+         const filteredData = data.filter((request) => request.property.userId === agentLandlord.id);
+  
+        setRequests(filteredData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -48,11 +50,12 @@ function KeyStats1({ onUploadClick, onManageLandlordsClick, onRequestsReceivedCl
 
     fetchRequests();
   }, []);
-
-  // Count leased properties
-  const leasedPropertiesCount = properties.filter(
-    (property) => property.status === 'Leased'
-  ).length;
+  
+const leasedPropertiesCount = properties.filter(
+  (property) => 
+    (property.status === 'Leased' || property.status === 'Let') && 
+    property.userId === agentLandlord.id
+).length;
 
   
 

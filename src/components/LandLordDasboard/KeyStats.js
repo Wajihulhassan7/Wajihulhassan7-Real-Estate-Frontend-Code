@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { baseUrl } from '../../const/url.const';
 
-function KeyStats({ onUploadClick, onCurrentPropertiesClick }) {
+function KeyStats({ onUploadClick, onCurrentPropertiesClick, onRequestsReceivedClick , onLeasedPropertiesClick }) {
   const landlord = useSelector((state) => state.landlord); // Access landlord details from Redux store
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Fetch properties from the API
-  useEffect(() => {
+ const [requests, setRequests] = useState([]);
+  
+ useEffect(() => {
     const fetchProperties = async () => {
       try {
         const response = await fetch(`${baseUrl}/properties`);
@@ -28,19 +28,43 @@ function KeyStats({ onUploadClick, onCurrentPropertiesClick }) {
     fetchProperties();
   }, []);
 
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/properties/requests`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch properties requests');
+        }
+        const data = await response.json();
+  
+        // Filter data to only include requests that belong to the logged-in landlord
+        const filteredData = data.filter((request) => request.property.userId === landlord.id);
+  
+        setRequests(filteredData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchRequests();
+  }, [landlord.id]); // Dependency array to re-fetch if landlord.id changes
+  
+
   // Filter properties based on landlord ID
-  const landlordProperties = properties.filter(
+  const landlordProperties = properties?.filter(
     (property) => property.userId === landlord.id
   );
 
   // Count active properties
   const activePropertiesCount = landlordProperties.filter(
-    (property) => property.status === 'Active' || property.status === 'Let' || property.status === 'To Let'
+    (property) => property.status === 'Active' || property.status === 'To Let'
   ).length;
   
   // Count leased properties
-  const leasedPropertiesCount = landlordProperties.filter(
-    (property) => property.status === 'Leased'
+  const leasedPropertiesCount = properties.filter(
+    (property) => property.status === 'Leased' || property.status === 'Let'
   ).length;
 
   return (
@@ -77,7 +101,7 @@ function KeyStats({ onUploadClick, onCurrentPropertiesClick }) {
               <p className="text-5xl font-inria font-light text-[#000000] my-4">
                 {leasedPropertiesCount}
               </p>
-              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300">
+              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={onLeasedPropertiesClick}>
                 View All
               </button>
             </div>
@@ -88,10 +112,10 @@ function KeyStats({ onUploadClick, onCurrentPropertiesClick }) {
                 Requests Received
               </h2>
               <p className="text-5xl font-inria font-light text-[#000000] my-4">
-                0
+              {requests?.length}
               </p>
-              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300">
-                Update
+              <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={onRequestsReceivedClick}>
+                View All
               </button>
             </div>
           </div>

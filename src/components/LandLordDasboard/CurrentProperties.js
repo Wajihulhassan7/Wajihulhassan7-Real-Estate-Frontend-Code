@@ -5,6 +5,7 @@ import '../CareProviderDashBoard/style.css';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../Redux/authSlice';
 import { baseUrl } from '../../const/url.const';
+import { toast } from 'react-toastify';
 
 const CurrentProperties = ({ onEditClick, onViewDetailsClick, onUploadClick }) => {
   const dispatch = useDispatch();
@@ -56,7 +57,7 @@ const CurrentProperties = ({ onEditClick, onViewDetailsClick, onUploadClick }) =
       const filteredProperties = response.data.properties.filter(
         (property) =>
           property.userId === userId &&
-          ["Active", "Let", "To Let"].includes(property.status) // Include only specified statuses
+          ["Active", "To Let"].includes(property.status) // Include only specified statuses
       );
   
       setProperties(filteredProperties);
@@ -152,12 +153,12 @@ const handleLogout = () => {
         const errorMessage = await response.text();
         console.error(`Error: ${response.status} - ${errorMessage}`);
   
-        if (response.status === 401) {
-          // Handle unauthorized error
-          alert("Your session has expired. Please log in again.");
-          handleLogout();
-          return;
-        }
+          if (response.status === 401) {
+                toast.dismiss();
+                toast.error(`Your session has expired. Please log in again.`);
+                handleLogout();
+                return;
+              }
   
         throw new Error(`Failed to update: ${response.statusText}`);
       }

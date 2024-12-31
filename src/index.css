@@ -22,6 +22,32 @@
     @apply px-6 py-8 text-[15px] space-y-6 shadow-md bg-white absolute w-full z-10 list-none rounded-b-lg;
   }
 }
+
+.requestedProperties{
+  padding:5px 20px;
+  border-radius: 20px;
+  color:#fff;
+  background-color: #2E86AB;
+}
+.requestedProperties:hover{
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.requestedPropertiesRespondBtn{
+  background-color: #C64C7B;
+}
+.registerSectionImg{
+  border-radius: 60px 20px 60px 20px; 
+}
+.bannerImg{
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+.whyChooseImg{
+  width: 180px;
+  height:auto;
+  object-fit: cover;
+  margin-bottom: 20px;
+  border-radius: 30px 10px 30px 10px;
+}
 .back-edit-add-btn {
   position: absolute;
   top:4%;
@@ -29,7 +55,13 @@
   width:30px;
   cursor: pointer;
 }
-
+/* Mobile: Adjust position */
+@media (max-width: 1440px) {
+ 
+.bannerHeading{
+  font-size: 37px !important;
+}
+}
 
 /* Mobile: Adjust position */
 @media (max-width: 767px) {

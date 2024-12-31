@@ -16,23 +16,30 @@ const SearchforCareProviders1 = ({onViewDetailsClick}) => {
     const [city, setCity] = useState("");
     const [propertyType, setPropertyType] = useState("");
     const [numOfBedrooms, setNumOfBedrooms] = useState("");
-  
     useEffect(() => {
-        // Fetch properties from the API when the component mounts
-        const fetchProperties = async () => {
-          try {
-            const response = await fetch(`${baseUrl}/properties/requests`);
-            const data = await response.json();
-            setProperties(data); // Directly set the returned array
+      // Fetch properties from the API when the component mounts
+      const fetchProperties = async () => {
+        try {
+          const response = await fetch(`${baseUrl}/properties/requests`);
+          const data = await response.json();
+    
+          // Ensure data is an array, else set to an empty array
+          if (Array.isArray(data)) {
+            setProperties(data); // Set the properties array
             setFilteredProperties(data); // Initially display all properties
-          } catch (error) {
-            console.error("Error fetching properties:", error);
+          } else {
+            console.error("Expected an array, but received:", data);
+            setFilteredProperties([]); // Handle unexpected response by setting empty array
           }
-        };
-      
-        fetchProperties();
-      }, []);
-      
+        } catch (error) {
+          console.error("Error fetching properties:", error);
+          setFilteredProperties([]); // Set to empty array in case of an error
+        }
+      };
+    
+      fetchProperties();
+    }, []);
+    
   
     useEffect(() => {
       // Initialize the map only once
@@ -103,12 +110,27 @@ const SearchforCareProviders1 = ({onViewDetailsClick}) => {
         filtered = filtered.filter((property) => property.numOfBedrooms === parseInt(numOfBedrooms));
       }
   
+    if (postcode) {
+      filtered = filtered.filter((property) =>
+        property.postalCode.toString().startsWith(postcode)
+      );
+    }
       setFilteredProperties(filtered);
     };
-  
+    const handleRemoveFilters = () => {
+      // Reset all filters
+      setCity('');
+      setPropertyType('');
+      setNumOfBedrooms('');
+      setPostcode('');
+    
+      // Reset the filtered properties to the full list
+      setFilteredProperties(properties);
+    };
+    
     return (
       <div className="matchMakerWrapper">
-        <h1>Search For Properties</h1>
+        <h1>Search For Properties Requests</h1>
   
         <div className="matchMakerMain">
           <div className="matchMakerInput">
@@ -260,12 +282,41 @@ const SearchforCareProviders1 = ({onViewDetailsClick}) => {
             </select>
           </div>
   
-          {/* Display message when no properties match the filters */}
-          {filteredProperties.length === 0 && (
-            <div className="noResultsMessage">
-              <p>No properties found matching your search criteria.</p>
-            </div>
-          )}
+          <div style={{ display: 'flex', gap: '10px' }}>
+  <button
+    onClick={handleFiltersChange}
+    className="text-white rounded-lg px-6 py-2 font-bold transition-all duration-300"
+    style={{
+      backgroundColor: '#a53864',
+    }}
+    onMouseEnter={(e) => (e.target.style.backgroundColor = '#912e4c')}
+    onMouseLeave={(e) => (e.target.style.backgroundColor = '#a53864')}
+  >
+    Search
+  </button>
+  {(city || propertyType || numOfBedrooms || postcode) && (
+  <button
+    onClick={handleRemoveFilters}
+    className="text-white rounded-lg px-6 py-2 font-bold transition-all duration-300"
+    style={{
+      backgroundColor: '#154D7C', // Default background color
+    }}
+    onMouseEnter={(e) => (e.target.style.backgroundColor = '#1D3557')} // Hover background color
+    onMouseLeave={(e) => (e.target.style.backgroundColor = '#154D7C')} // Revert to default
+  >
+    Reset Filters
+  </button>
+)}
+
+
+</div>
+
+
+        {filteredProperties.length === 0 && (
+          <div className="noResultsMessage">
+            <p style={{color:'red'}}>No properties found matching your search criteria.</p>
+          </div>
+        )}
   
           <div
             style={{
