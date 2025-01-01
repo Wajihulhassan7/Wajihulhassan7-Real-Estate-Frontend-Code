@@ -120,7 +120,7 @@ const handleLogout = () => {
   return (
     <div>
       <h2 className="text-2xl font-bold font-montserrat text-center text-[#154D7C] pb-6 mb-8">
-        Manage Landlords
+        Current Landlords
       </h2>
 
       {/* Search Section */}

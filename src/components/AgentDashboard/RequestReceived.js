@@ -74,7 +74,7 @@ function RequestReceived({onViewDetailsRequest}) {
   const handleSearchClick = () => {
     if (searchTerm) {
       const filtered = requests.filter((request) => 
-        request.propertyType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.property.id.toString().includes(searchTerm) ||
         request.id.toString().includes(searchTerm) ||
         new Date(request.availableDate).toLocaleDateString().includes(searchTerm)
       );
@@ -243,7 +243,7 @@ function RequestReceived({onViewDetailsRequest}) {
       }
   
       const propertyData = await propertyResponse.json();
-      toast.success("Updated successfully!");
+      toast.success("Responded successfully!");
       console.log("Property update response:", propertyData);
       fetchData();
   
@@ -427,7 +427,7 @@ function RequestReceived({onViewDetailsRequest}) {
         <div className="text-sm md:text-lg text-black">{new Date(request.createdAt).toLocaleDateString()}</div>
 
         <div className="text-sm md:text-xl font-bold font-montserrat text-[#000000] mt-2">Property Reference:</div>
-        <div className="text-sm md:text-lg text-black">{request.propertyType}</div>
+        <div className="text-sm md:text-lg text-black">{request.property.id}</div>
 
         <div className="text-sm md:md:text-xl font-bold font-montserrat text-[#000000] mt-2">Status:</div>
         <div className="text-sm md:text-lg text-black">{request.status.join(', ')}</div>
@@ -466,7 +466,7 @@ function RequestReceived({onViewDetailsRequest}) {
           filteredRequests.map((request) => (
             <tr key={request.id} className="bg-white">
               <td className="px-6 py-3 text-sm text-[#000000] border border-[#154D7C]">{request.id}</td>
-              <td className="px-6 py-3 text-sm text-[#000000] border border-[#154D7C]">{request.propertyType}</td>
+              <td className="px-6 py-3 text-sm text-[#000000] border border-[#154D7C]">{request.property.id}</td>
               <td className="px-6 py-3 text-sm text-[#000000] border border-[#154D7C]">
                 {new Date(request.createdAt).toLocaleDateString()}
               </td>

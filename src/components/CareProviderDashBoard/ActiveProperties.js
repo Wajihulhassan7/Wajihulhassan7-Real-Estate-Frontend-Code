@@ -23,7 +23,13 @@ const ActiveProperties = ({  onViewDetailsClick, onUploadingRequestClick}) => {
     const fetchProperties = async () => {
       try {
         const response = await axios.get(`${baseUrl}/properties`);
-        setProperties(response.data.properties);
+        const filteredProperties = response.data.properties.filter(
+          (property) =>
+            
+            ["To Let"].includes(property.status) 
+        );
+    
+        setProperties(filteredProperties);
       } catch (error) {
         console.error("Error fetching properties:", error);
       } finally {
@@ -196,7 +202,7 @@ const ActiveProperties = ({  onViewDetailsClick, onUploadingRequestClick}) => {
         className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100`}       onClick={() => handleBookmarkClick(property.id)} >
        Bookmark
       </button>
-   {careprovider.id &&  <button
+   {careprovider.id !== "" && localStorage.getItem('authTokenCareProvider') &&  <button
         className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100`}       onClick={() => handleUploadRequestClick(property.id)} >
        Make a Request
       </button> }

@@ -3,6 +3,7 @@ import img from '../assets/new_home_images/pexels-pixabay-209296.jpg';
 import axios from "axios";
 import { baseUrl } from "../const/url.const";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify'; 
 
 const RegistrationCareProvider = () => {
   const navigate = useNavigate();
@@ -112,7 +113,12 @@ const RegistrationCareProvider = () => {
       }, 2000);
     } catch (error) {
       console.error(error);
-      alert("Failed to register care provider details. Please try again.");
+      if (error.response?.status === 409 && error.config.url.includes(`${baseUrl}/auth/register`)) {
+        setStep(1); // Render step 1 of the form
+        toast.error("Email already registered. Please use a different email address.");
+      } else {
+        alert("Failed to register care provider details. Please try again.");
+      }
     }
   };
   

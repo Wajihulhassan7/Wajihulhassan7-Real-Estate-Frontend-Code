@@ -129,11 +129,11 @@ onNewListingsClick={handleNewListingsClick}
 />}
 {activeComponent === 'profile' && <EditProfileCareProvider />}
 
-{activeComponent === 'savedProperties' && <SavedProperties onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'savedProperties' && <SavedProperties onViewDetailsClick={handleDetailsClick} onUploadingRequestClick={handleUploadingRequestClick} />}
 {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick} />}
 {activeComponent === 'requestProperty' && <RequestPropertyForm onUpdateSuccess={handleUpdateSuccess} propertyId={selectedPropertyId} />}
 {activeComponent === 'myRequests' && <MyRequests onViewDetailsRequest={handleViewDetailsRequest} />}
-{activeComponent === 'searchProperties' && <SearchProperties />}
+{activeComponent === 'searchProperties' && <SearchProperties onViewDetailsClick={handleDetailsClick} />}
 {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
 {activeComponent === 'activeProperties' && <ActiveProperties onViewDetailsClick={handleDetailsClick} onUploadingRequestClick={handleUploadingRequestClick} />}
 {activeComponent === 'matchedProperties' && <MatchedProperties />}

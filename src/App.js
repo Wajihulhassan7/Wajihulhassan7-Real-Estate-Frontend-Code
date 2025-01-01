@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route} from 'react-router-dom';
 import Home from './pages/Home';
-import PropertyDetails from './pages/PropertyDetails';
 import RegistrationCareProvider from './components/RegisterCareProvider';
 import RegistrationAgent from './components/RegisterAgent';
 import RegistrationLandlord from './components/RegistrationLandlord';
@@ -63,8 +62,7 @@ const App = () => {
   element={<PrivateRoute element={<AgentforCareProvider />} role="isAuthenticatedAgentCareProvider" />} 
 />
 
-                
-       
+ 
       </Routes>
     
     </div>

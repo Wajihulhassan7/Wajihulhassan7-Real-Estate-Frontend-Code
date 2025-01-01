@@ -3,6 +3,7 @@ import axios from "axios";
 import img from '../assets/new_home_images/ronnie-george-z11gbBo13ro-unsplash.jpg';
 import { baseUrl } from "../const/url.const";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify'; 
 
 const RegistrationAgent = () => {
    const navigate = useNavigate();
@@ -97,7 +98,12 @@ const RegistrationAgent = () => {
       }, 2000);
     } catch (error) {
       console.error(error);
-      alert("Failed to register care provider details. Please try again.");
+      if (error.response?.status === 409 && error.config.url.includes(`${baseUrl}/auth/register`)) {
+            setStep(1); // Render step 1 of the form
+            toast.error("Email already registered. Please use a different email address.");
+          } else {
+            toast.error("Failed to register agent landlord. Please try again.");
+          }
     }
   };
 
@@ -109,7 +115,7 @@ const RegistrationAgent = () => {
     <div className="flex flex-col lg:flex-row h-full min-h-screen w-full bg-[#212727]">
       <div className="lg:flex-1 flex flex-col justify-center items-center bg-[#1762A9] p-6 lg:p-8 text-center">
         <img src={img} alt="Welcome" className="rounded-lg shadow-lg w-3/4 lg:w-1/2 mb-4 registerSectionImg" />
-        <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-4 mt-10">Agent Registeration</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-4 mt-10">Agent Landlord Registeration</h1>
         <p className="text-white text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-12">
         For agents dedicated to sourcing housing for care providers, PropertyConnectHub is your partner in finding compliant, reliable options faster. Join our network to connect with landlords and listings tailored for the care sector, reducing time spent on searches and giving you direct access to trusted properties. 
         </p>

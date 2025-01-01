@@ -305,6 +305,17 @@ const EditProfile1 = () => {
                     />
                 </div>
             </div>
+            
+<div className="editProfileTopBar" style={{marginBottom:'25px'}}>
+<h1 
+  style={{
+    fontSize: '19px',
+    textShadow: '1px 1px 3px rgba(0, 0, 0, 0.1)' // Light shadow effect
+  }}
+>
+  Care Provider Details
+</h1>
+</div>
             {formData.careProviderEmails?.map((provider, index) => (
                 <div className="flexRow" key={index}>
                     <div className="formField">
@@ -322,7 +333,7 @@ const EditProfile1 = () => {
                     </div>
                     {provider.careProviderDetails?.address && (
                         <div className="formField">
-                            <label htmlFor={`careProviderAddress-${index}`}>Address</label>
+                            <label htmlFor={`careProviderAddress-${index}`}>Care Provider Address (Read only)</label>
                             <input
                                 type="text"
                                 name={`careProviderAddress-${index}`}

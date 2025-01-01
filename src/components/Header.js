@@ -93,7 +93,7 @@ const Header = () => {
                   Register as Agent for CP
                 </Link>
                 <Link className="text-[#000000] text-lg py-2" to="/register-agent">
-                  Register as Agent
+                  Register as Landlord Agent
                 </Link>
                 <Link className="text-[#000000] text-lg py-2" to="/register-landlord">
                   Register as Landlord
@@ -189,7 +189,7 @@ const Header = () => {
             Register as Agent for CP
           </Link>
           <Link className="text-[#000000] text-lg py-2" to="/register-agent">
-            Register as Agent
+            Register as Landlord Agent
           </Link>
           <Link className="text-[#000000] text-lg py-2" to="/register-landlord">
             Register as Landlord

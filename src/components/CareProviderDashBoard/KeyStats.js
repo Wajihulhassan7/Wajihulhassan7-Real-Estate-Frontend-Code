@@ -38,8 +38,7 @@ function KeyStatsCareProvider({activeRequestsClick, matchedPropertiesClick, onNe
         // Calculate matched properties based on postal code
         const matchedProperties = propertiesData.properties.filter((property) =>
           filteredRequests.some(
-            (request) =>   property.city === request.city &&
-            property.propertyType === request.propertyType &&
+            (request) =>  
             property.postalCode === request.postalCode
           )
         );

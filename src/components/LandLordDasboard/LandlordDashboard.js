@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import RequestReceived from '../AgentDashboard/RequestReceived';
 import RequestDetails from '../CareProviderDashBoard/RequestDetails';
 import LeasedProperties from '../CareProviderDashBoard/LeasedProperties';
+import MyProperties from '../AgentDashboard/MyProperties';
 
 const LandlordDashboard = () => {
   const landlord = useSelector((state) => state.landlord); // Access user details from Redux store
@@ -41,6 +42,12 @@ console.log(landlord);
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent('viewProperty'); // Switch to edit property component
     setActiveLink('viewProperty');
+  };
+  
+  const   handleDetailsClickAllProperties = (id) => {
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('viewProperty'); // Switch to edit property component
+    setActiveLink('allProperties');
   };
   
   const handleDetailsInactiveListingClick = (id) => {
@@ -128,7 +135,7 @@ console.log(landlord);
    onLeasedPropertiesClick={handleLeasedPropertiesClick}
 />}
 {activeComponent === 'profile' && <EditProfile />}
-{activeComponent === 'matchmaker' && <SearchforCareProviders1 onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'matchmaker' && <SearchforCareProviders1 onViewDetailsClick={handleDetailsClick} onViewDetailsRequest={handleViewDetailsRequest} />}
 {activeComponent === 'uploadProperty' && <UploadPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
 {activeComponent === 'inactiveListings' && <InactiveListing onViewDetailsInactiveListingClick={handleDetailsInactiveListingClick} />}
 {activeComponent === 'currentProperties' && (
@@ -140,6 +147,7 @@ console.log(landlord);
       {activeComponent === "requestreceived" && <RequestReceived  onViewDetailsRequest={handleViewDetailsRequest} />}
       {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
       {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick}  />}
+      {activeComponent === 'allProperties' && <MyProperties onViewDetailsClick={handleDetailsClickAllProperties} />}
     </div>
     
       

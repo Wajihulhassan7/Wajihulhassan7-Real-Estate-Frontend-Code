@@ -2,16 +2,21 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../Redux/authSlice';
 import bg from '../assets/img/house21.jpg';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showDropdown, setShowDropdown] = useState(false);
 
+  const toggleDropdown = () => {
+    setShowDropdown(prevState => !prevState);
+  };
   // Accessing authentication state
   const { loading, error, user } = useSelector((state) => state.auth);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +50,10 @@ const LoginForm = () => {
         console.error('Login failed:', err);
       });
   };  
+  
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
   return (
     <div
       className="relative flex justify-center items-center h-screen bg-gray-100"
@@ -77,20 +86,28 @@ const LoginForm = () => {
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="password">
+          <div className="relative w-full">
+          <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="password">
               Password
             </label>
-            <input
-              type="password"
-              id="password"
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Password"
+                    id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none"
-              placeholder="Enter your password"
               required
-            />
-          </div>
+                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-3 flex items-center text-sm text-[#1762A9] mt-[25px]"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
 
           <button
             type="submit"
@@ -102,11 +119,40 @@ const LoginForm = () => {
           </button>
         </form>
         <p className="text-center text-sm text-gray-600 mt-4">
-          Don't have an account?{' '}
-          <a href="/register-landlord" className="text-[#154D7C] hover:underline">
-            Register
-          </a>
-        </p>
+      Don't have an account?{' '}
+      <button 
+        onClick={toggleDropdown} 
+        className="text-[#154D7C] hover:underline focus:outline-none"
+      >
+        Register
+      </button>
+
+      {/* Dropdown menu */}
+      {showDropdown && (
+        <div className="absolute mt-8 bg-white border border-[#154D7C] rounded-lg shadow-lg z-10 w-48" style={{marginLeft:'40%'}}>
+          <Link to="/register-care-provider">
+            <button className="w-full text-left px-4 py-2 text-sm text-[#154D7C] hover:bg-[#C64C7B] hover:text-white">
+              Register as Care Provider
+            </button>
+          </Link>
+          <Link to="/register-agents-care-provider">
+            <button className="w-full text-left px-4 py-2 text-sm text-[#154D7C] hover:bg-[#C64C7B] hover:text-white">
+              Register as Agent for CP
+            </button>
+          </Link>
+          <Link to="/register-landlord">
+            <button className="w-full text-left px-4 py-2 text-sm text-[#154D7C] hover:bg-[#C64C7B] hover:text-white">
+              Register as Landlord
+            </button>
+          </Link>
+          <Link to="/register-agent">
+            <button className="w-full text-left px-4 py-2 text-sm text-[#154D7C] hover:bg-[#C64C7B] hover:text-white">
+              Register as Landlord Agent
+            </button>
+          </Link>
+        </div>
+      )}
+    </p>
       </div>
     </div>
   );

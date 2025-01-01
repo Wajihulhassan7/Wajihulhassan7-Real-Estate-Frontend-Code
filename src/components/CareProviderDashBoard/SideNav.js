@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../../Redux/authSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { baseUrl } from '../../const/url.const';
 const SideNavCareProvider = ({ showMenu, toggleMenu, onLinkClick, activeLink }) => {
+  const careProvider = useSelector((state) => state.careProvider); // Ensure correct state mapping
+  const [listings, setListings] = useState([]);
+      
   const dispatch = useDispatch();
   const navigate = useNavigate();
     const handleLogout = () => {
@@ -11,6 +15,38 @@ const SideNavCareProvider = ({ showMenu, toggleMenu, onLinkClick, activeLink }) 
         toast.success("Successfully logged out 👋");
       navigate('/');
     };
+
+
+       const fetchRequests = async () => {
+        try {
+          const response = await fetch(`${baseUrl}/properties/requests`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch property requests.");
+          }
+          
+          const data = await response.json();
+    
+         
+          if (data.message && data.message === "Error fetching all requests") {
+            throw new Error("Error fetching all property requests.");
+          }
+    
+          // Filter listings by careProvider ID
+          const filteredListings = data.filter((item) => 
+            item.userId === careProvider.id && 
+            (item.status.includes('Resolved') || item.status.includes('Leased'))
+          );
+            setListings(filteredListings);
+        } catch (error) {
+          console.error("Error fetching requests:", error);
+         
+        }
+      };
+   useEffect(() => {
+      fetchRequests();
+    }, [careProvider.id]);
+
+    const unreadNotificationsCount = listings.filter((listing) => !listing.notificationView).length;
 
 
   return (
@@ -64,8 +100,9 @@ const SideNavCareProvider = ({ showMenu, toggleMenu, onLinkClick, activeLink }) 
         <Link
           className={`sideNavLink ${activeLink === 'notifications' ? 'active' : ''}`}
           onClick={() => onLinkClick('notifications', 'notifications')}
-        >
-         Notifications
+        > Notifications
+  {unreadNotificationsCount > 0 && ` (${unreadNotificationsCount})`}
+
         </Link>
         <Link
           className={`sideNavLink ${activeLink === 'logout' ? 'active' : ''}`}

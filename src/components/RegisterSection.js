@@ -48,7 +48,7 @@ const RegisterSection = () => {
             </Link>
             <Link to="/register-agent" className="w-full">
               <button className="bg-[#C64C7B] text-white font-semibold py-4 px-8 rounded-lg transition duration-300 shadow-lg transform hover:-translate-y-1 hover:scale-105 w-full">
-                Register as Agent
+                Register as Landlord Agent
               </button>
             </Link>
           </div>

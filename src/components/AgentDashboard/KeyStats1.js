@@ -81,7 +81,7 @@ const leasedPropertiesCount = properties.filter(
                {agentLandlord.totalManagedLandlords}
               </p>
               <button className="bg-[#C64C7B] text-white px-6 text-sm py-2 rounded-full hover:bg-[#9e3f60] transition duration-300" onClick={onManageLandlordsClick}>
-                View All
+                View Current Landlords
               </button>
             </div>
   

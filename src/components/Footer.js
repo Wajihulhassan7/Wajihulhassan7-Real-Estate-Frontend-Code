@@ -2,6 +2,7 @@ import React from 'react';
 import { FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from 'react-icons/fa';
 import '../components/CareProviderDashBoard/style.css'
+import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="bg-[#131F2B] rounded-b-3xl bg-opacity-87 text-white pt-16">
@@ -42,15 +43,12 @@ const Footer = () => {
     <ul className="space-y-3">
       <li>
       <i class="fa fa-angle-right text-[#2E86AB] mr-2"></i>
-        <a href="/home" className="text-[white]">Home</a>
+        <Link to="/" className="text-[white]">Home</Link>
       </li>
+    
       <li>
       <i class="fa fa-angle-right text-[#2E86AB] mr-2"></i>
-        <a href="/about" className="text-[white]">About</a>
-      </li>
-      <li>
-      <i class="fa fa-angle-right text-[#2E86AB] mr-2"></i>
-        <a href="/services" className="text-[white]">Services</a>
+        <Link to="/services" className="text-[white]">Services</Link>
       </li>
     </ul>
   </div>

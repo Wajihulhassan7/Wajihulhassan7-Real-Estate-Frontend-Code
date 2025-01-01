@@ -8,6 +8,8 @@ const PropertyFormPage1 = ({ propertyDetails, setPropertyDetails, onNext }) => {
     "Wider Doorways",
     "Other",
   ];
+  const [showInfo, setShowInfo] = useState(false);
+  const [showLongitudeInfo, setShowLongitudeInfo] = useState(false);
 
   const handleAccessibilityChange = (feature) => {
     setPropertyDetails((prev) => ({
@@ -415,7 +417,7 @@ const handleLeaseTermChange = (event) => {
 
 
 {/* Latitude */}
-<div>
+<div className="relative">
   <label className="block text-sm font-medium mb-1">Latitude</label>
   <input
     type="text"
@@ -426,10 +428,27 @@ const handleLeaseTermChange = (event) => {
     placeholder="Enter the latitude"
     required
   />
+  {/* Information Icon */}
+  <div className="absolute -top-1  right-0 cursor-pointer" >
+    <h6
+      className="text-blue-500 hover:text-blue-800"
+      onClick={() => setShowInfo((prev) => !prev)}
+      aria-label="Show information about latitude"
+    >
+      ℹ️
+    </h6>
+  </div>{/* Tooltip Paragraph */}
+  {showInfo && (
+    <div className="absolute top-8 right-0 bg-white border rounded-lg shadow-lg p-2 w-64 z-10">
+      <p className="text-sm">
+        To find the latitude, open Google Maps, right-click on your location, 
+        and select the coordinates. The first value is the latitude.
+      </p>
+    </div>
+  )}
 </div>
-
 {/* Longitude */}
-<div>
+<div className="relative">
   <label className="block text-sm font-medium mb-1">Longitude</label>
   <input
     type="text"
@@ -440,7 +459,27 @@ const handleLeaseTermChange = (event) => {
     placeholder="Enter the longitude"
     required
   />
+  {/* Information Icon */}
+  <div className="absolute -top-1 right-0 cursor-pointer">
+    <h6
+      className="text-blue-500 hover:text-blue-800"
+      onClick={() => setShowLongitudeInfo((prev) => !prev)}
+      aria-label="Show information about longitude"
+    >
+      ℹ️
+    </h6>
+  </div>
+  {/* Tooltip Paragraph */}
+  {showLongitudeInfo && (
+    <div className="absolute top-0 right-0 mt-6 bg-white border rounded-lg shadow-lg p-2 w-64 z-10">
+      <p className="text-sm">
+        To find the longitude, open Google Maps, right-click on your location, 
+        and select the coordinates. The second value is the longitude.
+      </p>
+    </div>
+  )}
 </div>
+
 
 
 

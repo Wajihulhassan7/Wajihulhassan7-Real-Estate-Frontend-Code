@@ -3,10 +3,14 @@ import { useSelector } from 'react-redux';
 import Image from "../../assets/images/image5.png"; // Placeholder for property images
 import { baseUrl } from '../../const/url.const';
 
-const SavedProperties = ({  onViewDetailsClick }) => {
+const SavedProperties = ({  onViewDetailsClick, onUploadingRequestClick }) => {
   const careprovider = useSelector((state) => state.careProvider);
   const [properties, setProperties] = useState([]);
+const [visibleDropdown, setVisibleDropdown] = useState(null);
 
+const toggleDropdown = (id) => {
+  setVisibleDropdown(visibleDropdown === id ? null : id); // Toggle visibility for the clicked property
+};
   useEffect(() => {
     // Fetch properties from the API
     const fetchProperties = async () => {
@@ -34,7 +38,7 @@ const SavedProperties = ({  onViewDetailsClick }) => {
 
         // Filter properties where the id is in the savedPropertyIds array
         const filteredProperties = fetchedProperties.filter((property) =>
-          savedPropertyIds.includes(property.id) // Compare as numbers
+          savedPropertyIds.includes(property.id) 
         );
 
         // Remove duplicates by the property ID
@@ -53,6 +57,10 @@ const SavedProperties = ({  onViewDetailsClick }) => {
   const handleViewDetails = (id) => {
     onViewDetailsClick(id);
   };
+   
+  const handleUploadRequestClick = (id) => {
+    onUploadingRequestClick(id);
+  };
   return (
     <div className="bg-opacity-14 p-8 pb-14 shadow-md" style={{ borderTopLeftRadius: '30px', width: '100%', background: 'rgba(198, 76, 123, 0.10)' }}>
       <h2 className="text-2xl font-extrabold font-montserrat py-4 px-8 text-[#2E86AB] mb-6">Saved Properties</h2>
@@ -66,6 +74,26 @@ const SavedProperties = ({  onViewDetailsClick }) => {
               <p className="text-sm mb-4">{property.propertyType}</p>
               <div className="flex justify-between relative">
                 <button className="bg-[#a53864] text-white text-[14px] px-3 py-1 rounded-full hover:bg-[#1E5D7B]" onClick={() => handleViewDetails(property.id)}>View Details</button>
+            {/* Vertical Dots Button */}
+          { ["Active", "To Let"].includes(property.status) &&  <button
+                    onClick={() => toggleDropdown(property.id)}
+                    className="bg-gray-200 text-black text-[14px] px-3 py-1 rounded-full hover:bg-gray-300"
+                  >
+                    &#8226;&#8226;&#8226;
+                  </button>}
+  
+  {/* Dropdown Menu */}
+  {visibleDropdown === property.id && (
+    <div className="absolute right-0 mt-9 bg-white shadow-lg rounded-lg z-10">
+     
+ <button
+        className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100`}      onClick={() => handleUploadRequestClick(property.id)}  >
+       Make a Request
+      </button> 
+    </div>
+  )}
+  
+  
               </div>
             </div>
           ))}

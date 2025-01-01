@@ -57,7 +57,7 @@ const CurrentProperties = ({ onEditClick, onViewDetailsClick, onUploadClick }) =
       const filteredProperties = response.data.properties.filter(
         (property) =>
           property.userId === userId &&
-          ["Active", "To Let"].includes(property.status) // Include only specified statuses
+          ["To Let"].includes(property.status) // Include only specified statuses
       );
   
       setProperties(filteredProperties);
@@ -95,14 +95,14 @@ const handleLogout = () => {
     
   
       if (!authToken) {
-        alert("You are not authenticated. Please log in.");
+        toast.error("You are not authenticated. Please log in.");
         return;
       }
   
       const propertyToUpdate = properties.find((property) => property.id === propertyId);
   
       if (!propertyToUpdate) {
-        alert("Property not found!");
+        toast.error("Property not found!");
         return;
       }
   
@@ -166,17 +166,17 @@ const handleLogout = () => {
       const data = await response.json();
       fetchProperties();
       setVisibleDropdown(null);
-      alert(`Property status updated to "${status}" successfully!`);
+      toast.success(`Property status updated to "${status}" successfully!`);
       console.log("Response from server:", data);
     } catch (error) {
       console.error("Error updating property status:", error);
-      alert("Failed to update the property status. Please try again.");
+      toast.error("Failed to update the property status. Please try again.");
     }
   };
   
   return (
     <div className="bg-opacity-14 p-8 pb-14 shadow-md" style={{ borderTopLeftRadius: '30px', width:'100%', background: 'rgba(198, 76, 123, 0.10)' }}>
-      <h2 className="text-2xl font-extrabold font-montserrat py-4 px-8 text-[#2E86AB] mb-6">Current Properties</h2>
+      <h2 className="text-2xl font-extrabold font-montserrat py-4 px-8 text-[#2E86AB] mb-6">Active Properties</h2>
       {properties.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
           {properties.map((property) => (
@@ -225,25 +225,8 @@ const handleLogout = () => {
     >
       Deactivate
     </button>
-    {/* Let Button */}
-    <button
-      className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100 ${
-        property.status === "Let" ? "bg-green-200" : "" // Highlight if status is "Let"
-      }`}
-      onClick={() => updatePropertyStatus(property.id, "Let")} // Set status to "Let"
-    >
-      Let
-    </button>
-
-    {/* To Let Button */}
-    <button
-      className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100 ${
-        property.status === "To Let" ? "bg-yellow-200" : "" // Highlight if status is "To Let"
-      }`}
-      onClick={() => updatePropertyStatus(property.id, "To Let")} // Set status to "To Let"
-    >
-      To Let
-    </button>
+ 
+   
   </div>
 )}
 

@@ -32,16 +32,22 @@ const SideNavbar =({ showMenu, toggleMenu, onLinkClick, activeLink})=>{
           My Profile
         </Link>
         <Link
+          className={`sideNavLink ${activeLink === 'allProperties'  ? 'active' : ''}`}
+          onClick={() => onLinkClick('allProperties', 'allProperties')}
+        >
+         My All Listings 
+        </Link>
+        <Link
           className={`sideNavLink ${activeLink === 'currentProperties' || activeLink === 'editProperty' || activeLink === 'viewProperty' ? 'active' : ''}`}
           onClick={() => onLinkClick('currentProperties', 'currentProperties')}
         >
-          Current Properties 
+          Active Properties 
         </Link>
         <Link
           className={`sideNavLink ${activeLink === 'managelandlord' ? 'active' : ''}`}
           onClick={() => onLinkClick('managelandlord', 'managelandlord')}
         >
-          Manage Landlords
+          Current Landlords
         </Link>
         <Link
           className={`sideNavLink ${activeLink === 'uploadProperty' ? 'active' : ''}`}

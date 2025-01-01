@@ -26,17 +26,24 @@ const SideNav = ({ showMenu, toggleMenu, onLinkClick, activeLink }) => {
         >
           Dashboard
         </Link>
+        
         <Link
           className={`sideNavLink ${activeLink === 'profile' ? 'active' : ''}`}
           onClick={() => onLinkClick('profile', 'profile')}
         >
           My Profile
         </Link>
+         <Link
+                  className={`sideNavLink ${activeLink === 'allProperties' ? 'active' : ''}`}
+                  onClick={() => onLinkClick('allProperties', 'allProperties')}
+                >
+                 My All Listings 
+                </Link>
         <Link
           className={`sideNavLink ${activeLink === 'currentProperties' || activeLink === 'editProperty' || activeLink === 'viewProperty' ? 'active' : ''}`}
           onClick={() => onLinkClick('currentProperties', 'currentProperties')}
         >
-          Current Properties 
+          Active Properties 
         </Link>
         <Link
           className={`sideNavLink ${activeLink === 'uploadProperty' ? 'active' : ''}`}

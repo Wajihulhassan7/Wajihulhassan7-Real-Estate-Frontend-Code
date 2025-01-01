@@ -6,128 +6,156 @@ import MarkerHouse from "../../assets/images/houseWithLocationSymbol.png"; // Im
 import { baseUrl } from '../../const/url.const';
 
 
-const SearchforCareProviders1 = ({onViewDetailsClick}) => {
-    const mapContainerRef = useRef(null); // Ref for the map container
-    const mapInstanceRef = useRef(null); // Ref for the map instance
-    const markersRef = useRef([]); // Ref to store markers
-    const [postcode, setPostcode] = useState("");
-    const [properties, setProperties] = useState([]);
-    const [filteredProperties, setFilteredProperties] = useState([]);
-    const [city, setCity] = useState("");
-    const [propertyType, setPropertyType] = useState("");
-    const [numOfBedrooms, setNumOfBedrooms] = useState("");
-    useEffect(() => {
-      // Fetch properties from the API when the component mounts
-      const fetchProperties = async () => {
-        try {
-          const response = await fetch(`${baseUrl}/properties/requests`);
-          const data = await response.json();
-    
-          // Ensure data is an array, else set to an empty array
-          if (Array.isArray(data)) {
-            setProperties(data); // Set the properties array
-            setFilteredProperties(data); // Initially display all properties
-          } else {
-            console.error("Expected an array, but received:", data);
-            setFilteredProperties([]); // Handle unexpected response by setting empty array
-          }
-        } catch (error) {
-          console.error("Error fetching properties:", error);
-          setFilteredProperties([]); // Set to empty array in case of an error
+const SearchforCareProviders1 = ({onViewDetailsClick, onViewDetailsRequest}) => {
+  const mapContainerRef = useRef(null); // Ref for the map container
+  const mapInstanceRef = useRef(null); // Ref for the map instance
+  const markersRef = useRef([]); // Ref to store markers
+  const [postcode, setPostcode] = useState("");
+  const [properties, setProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [city, setCity] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [numOfBedrooms, setNumOfBedrooms] = useState("");
+
+  useEffect(() => {
+    // Fetch properties from the API when the component mounts
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/properties/requests`);
+        const data = await response.json();
+
+        // Ensure data is an array, else set to an empty array
+        if (Array.isArray(data)) {
+          setProperties(data); // Set the properties array
+          setFilteredProperties(data); // Initially display all properties
+        } else {
+          console.error("Expected an array, but received:", data);
+          setFilteredProperties([]); // Handle unexpected response by setting empty array
         }
-      };
-    
-      fetchProperties();
-    }, []);
-    
-  
-    useEffect(() => {
-      // Initialize the map only once
-      if (!mapInstanceRef.current) {
-        const map = L.map(mapContainerRef.current).setView([51.5074, -0.1278], 6); // Default position
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "Property Care Hub",
-        }).addTo(map);
-        mapInstanceRef.current = map;
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+        setFilteredProperties([]); // Set to empty array in case of an error
       }
-    }, []);
-  
-    useEffect(() => {
-      const map = mapInstanceRef.current;
-      if (!map) return;
-  
-      // Clear existing markers
-      markersRef.current.forEach((marker) => marker.remove());
-      markersRef.current = [];
-  
-      // Define custom icon for the marker
-      const customIcon = L.icon({
-        iconUrl: MarkerHouse,
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32],
-      });
-  
-      // Add markers for filtered properties based on latitude and longitude
-      filteredProperties.forEach((property) => {
-        const { latitude, longitude } = property;
-        if (latitude && longitude) {
-          const lat = parseFloat(latitude);
-          const lon = parseFloat(longitude);
-          const marker = L.marker([lat, lon], { icon: customIcon })
-            .addTo(map)
-            .bindPopup(
-              `<b>${property.address}</b><br>${property.city}<br>${property.postalCode}`
-            );
-          markersRef.current.push(marker);
-        }
-      });
-  
-      // Adjust map bounds to fit markers
-      if (markersRef.current.length > 0) {
-        const group = L.featureGroup(markersRef.current);
-        map.fitBounds(group.getBounds());
-      }
-    }, [filteredProperties]);
-  
-    const handleSearch = () => {
-      const matched = properties.filter((property) =>
-        property.postalCode.toString().startsWith(postcode)
-      );
-      setFilteredProperties(matched);
     };
+
+    fetchProperties();
+  }, []);
+
+  useEffect(() => {
+    // Initialize the map only once
+    if (!mapInstanceRef.current) {
+      const map = L.map(mapContainerRef.current).setView([51.5074, -0.1278], 6); // Default position
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "Property Care Hub",
+      }).addTo(map);
+      mapInstanceRef.current = map;
+    }
+  }, []);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
   
-    const handleFiltersChange = () => {
-      let filtered = properties;
+    // Clear existing markers
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
   
-      if (city) {
-        filtered = filtered.filter((property) => property.city === city);
-      }
-      if (propertyType) {
-        filtered = filtered.filter((property) => property.propertyType === propertyType);
-      }
-      if (numOfBedrooms) {
-        filtered = filtered.filter((property) => property.numOfBedrooms === parseInt(numOfBedrooms));
-      }
+    // Define custom icon for the marker
+    const customIcon = L.icon({
+      iconUrl: MarkerHouse,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32],
+    });
   
+    // Add markers for filtered properties based on latitude and longitude
+    filteredProperties.forEach((property) => {
+      const { latitude, longitude, id, address, city, postalCode } = property;
+      if (latitude && longitude) {
+        const lat = parseFloat(latitude);
+        const lon = parseFloat(longitude);
+        const marker = L.marker([lat, lon], { icon: customIcon })
+          .addTo(map)
+          .bindPopup(
+            `
+              <div>
+                <b>${address}</b><br>${city}<br>${postalCode}<br>
+                <button id="view-details-${id}" style="background-color: #007bff; color: white; padding: 4px 20px; border: none; border-radius: 5px; font-size: 14px;margin-top:15px; cursor: pointer; transition: all 0.3s ease;">View more details</button>
+              </div>
+            `
+          );
+  
+        // Attach the event listener manually to the button
+        marker.on('popupopen', () => {
+          const viewButton = document.getElementById(`view-details-${id}`);
+          if (viewButton) {
+            viewButton.addEventListener('click', () => handleViewDetails(id));
+          }
+        });
+  
+        markersRef.current.push(marker);
+      }
+    });
+  
+    // Adjust map bounds to fit markers
+    if (markersRef.current.length > 0) {
+      const group = L.featureGroup(markersRef.current);
+      map.fitBounds(group.getBounds());
+    }
+  }, [filteredProperties]);
+  
+  const handleViewDetails = (id) => {
+    // Find the property with the given id from the properties array
+    const property = properties.find((property) => property.id === id);
+  
+    // If the property is found, pass it to onViewDetailsRequest
+    if (property) {
+      onViewDetailsRequest(property); // Assuming onViewDetailsRequest is a function you want to call with the property data
+    } else {
+      alert('Property not found!');
+    }
+  };
+  
+  
+  const handleSearch = () => {
+    const matched = properties.filter((property) =>
+      property.postalCode.toString().startsWith(postcode)
+    );
+    setFilteredProperties(matched);
+  };
+
+  const handleFiltersChange = () => {
+    let filtered = properties;
+
+    if (city) {
+      filtered = filtered.filter((property) => property.city === city);
+    }
+    if (propertyType) {
+      filtered = filtered.filter((property) => property.propertyType === propertyType);
+    }
+    if (numOfBedrooms) {
+      filtered = filtered.filter((property) => property.numOfBedrooms === parseInt(numOfBedrooms));
+    }
+
     if (postcode) {
       filtered = filtered.filter((property) =>
         property.postalCode.toString().startsWith(postcode)
       );
     }
-      setFilteredProperties(filtered);
-    };
-    const handleRemoveFilters = () => {
-      // Reset all filters
-      setCity('');
-      setPropertyType('');
-      setNumOfBedrooms('');
-      setPostcode('');
-    
-      // Reset the filtered properties to the full list
-      setFilteredProperties(properties);
-    };
-    
+    setFilteredProperties(filtered);
+  };
+
+  const handleRemoveFilters = () => {
+    // Reset all filters
+    setCity('');
+    setPropertyType('');
+    setNumOfBedrooms('');
+    setPostcode('');
+
+    // Reset the filtered properties to the full list
+    setFilteredProperties(properties);
+  };
+ 
     return (
       <div className="matchMakerWrapper">
         <h1>Search For Properties Requests</h1>
@@ -312,11 +340,13 @@ const SearchforCareProviders1 = ({onViewDetailsClick}) => {
 </div>
 
 
-        {filteredProperties.length === 0 && (
-          <div className="noResultsMessage">
-            <p style={{color:'red'}}>No properties found matching your search criteria.</p>
-          </div>
-        )}
+{filteredProperties.length === 0 && (city || propertyType || numOfBedrooms || postcode) && (
+  <div className="noResultsMessage">
+    <p style={{ color: 'red' }}>No properties found matching your search criteria.</p>
+  </div>
+)}
+
+
   
           <div
             style={{

@@ -126,7 +126,7 @@ console.log(agentCareProvider);
           /> 
         )}
         {activeComponent === "profile1" && <EditProfile1 />}
-        {activeComponent === "searchProperties" && <SearchProperties />}
+        {activeComponent === "searchProperties" && <SearchProperties onViewDetailsClick={handleDetailsClick} />}
         {activeComponent === "manageClients" && <ManageClients handleViewDetails={manageViewDetailsActiveInactive}  />}
     
 {activeComponent === 'savedProperties' && <SavedProperties onViewDetailsClick={handleDetailsClick} />}

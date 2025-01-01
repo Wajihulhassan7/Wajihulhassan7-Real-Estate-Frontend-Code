@@ -17,6 +17,7 @@ import InactiveListing from "../LandLordDasboard/InactiveListing";
 import RequestDetails from "../CareProviderDashBoard/RequestDetails";
 import ActiveInactiveListings from "./ActiveInactiveListings";
 import LeasedProperties from "./LeasedProperties";
+import MyProperties from "./MyProperties";
 
 const AgentDashboard = () => {
   const agentLandlord = useSelector((state) => state.agentLandlord); 
@@ -94,6 +95,11 @@ console.log(agentLandlord);
     setActiveLink('managelandlord');
   };
   
+  const   handleDetailsClickAllProperties = (id) => {
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('viewProperty'); // Switch to edit property component
+    setActiveLink('allProperties');
+  };
   return (
     <div>
       <Header />
@@ -140,7 +146,7 @@ console.log(agentLandlord);
           /> 
         )}
         {activeComponent === "profile1" && <EditProfile1 />}
-        {activeComponent === "matchmaker" && <SearchforCareProviders1 />}
+        {activeComponent === "matchmaker" && <SearchforCareProviders1 onViewDetailsRequest={handleViewDetailsRequest} />}
         {activeComponent === "uploadProperty" && <UploadPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
         {activeComponent === "managelandlord" && <ManageLandlords handleViewDetails={manageViewDetailsActiveInactive} />}
         {activeComponent === "requestreceived" && <RequestReceived  onViewDetailsRequest={handleViewDetailsRequest} />}
@@ -167,6 +173,8 @@ console.log(agentLandlord);
         {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
         {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick}  />}
         {activeComponent === 'viewLandlordDetails' && <ActiveInactiveListings email={selectedPropertyId} onViewDetailsClick={handleDetailsClick}  />}
+        
+        {activeComponent === 'allProperties' && <MyProperties onViewDetailsClick={handleDetailsClickAllProperties} />}
       </div>
       <Footer />
     </div>

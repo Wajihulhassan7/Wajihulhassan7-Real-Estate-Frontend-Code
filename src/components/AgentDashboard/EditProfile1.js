@@ -290,6 +290,19 @@ const EditProfile1 = () => {
         </div>
 </div>
 
+<div className="editProfileTopBar" style={{marginBottom:'25px'}}>
+<h1 
+  style={{
+    fontSize: '19px',
+    textShadow: '1px 1px 3px rgba(0, 0, 0, 0.1)' // Light shadow effect
+  }}
+>
+  Landlord Details
+</h1>
+
+        
+      </div>
+
 
       {/* Landlord Email Fields */}
       {formData.landlordEmails?.map((landlord, index) => (
@@ -311,7 +324,7 @@ const EditProfile1 = () => {
           {/* Only render the phone number if it's an existing landlord */}
           {landlord.landlordDetails?.phoneNumber && (
             <div className="formField">
-              <label htmlFor={`phone-${index}`}>Landlord Phone Number</label>
+              <label htmlFor={`phone-${index}`}>Landlord Phone Number (Read only)</label>
               <input
                 type="text"
                 name={`landlordPhone-${index}`}

@@ -45,7 +45,7 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
   
       // Filter properties with status "Inactive" and matching userId
       const inactiveProperties = data.properties.filter(
-        (property) => property.status === "Inactive" && property.userId === userId
+        (property) => (property.status === "Inactive" || property.status === "Leased" || property.status === "Let") && property.userId === userId
       );
   
       setListings(inactiveProperties);
@@ -105,14 +105,14 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
     try {
      
       if (!authToken) {
-        alert("You are not authenticated. Please log in.");
+        toast.error("You are not authenticated. Please log in.");
         return;
       }
   
       const propertyToUpdate = listings.find((property) => property.id === propertyId);
   
       if (!propertyToUpdate) {
-        alert("Property not found!");
+        toast.error("Property not found!");
         return;
       }
   
@@ -174,11 +174,11 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
   
       const data = await response.json();
       fetchProperties();
-      alert(`Property status updated to "${status}" successfully!`);
+      toast.success(`Property status updated to "${status}" successfully!`);
       console.log("Response from server:", data);
     } catch (error) {
       console.error("Error updating property status:", error);
-      alert("Failed to update the property status. Please try again.");
+      toast.error("Failed to update the property status. Please try again.");
     }
   };
   
@@ -225,7 +225,7 @@ const InactiveListing = ({ onViewDetailsInactiveListingClick }) => {
                       <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
                       <button
   className="bg-[#154D7C] text-white px-4 py-1 rounded-full text-sm"
-  onClick={() => updatePropertyStatus(listing.id, "Active")} // Set status to "Active"
+  onClick={() => updatePropertyStatus(listing.id, "To Let")} // Set status to "Active"
 >
   Reactivate
 </button>

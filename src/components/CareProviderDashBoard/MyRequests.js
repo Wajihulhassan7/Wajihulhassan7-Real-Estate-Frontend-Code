@@ -90,39 +90,45 @@ const handleDelete = async (id) => {
 const handleViewDetails = (id) => {
   onViewDetailsRequest(id);
 };
+return (
+  <div className="flex pt-8">
+    <div className="flex-1 p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold pb-8 text-center font-raleway text-[#154D7C] mb-6">
+          My Requests
+        </h1>
 
-  return (
-    <div className="flex pt-8">
-      <div className="flex-1 p-6">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl font-bold pb-8 text-center font-raleway text-[#154D7C] mb-6">
-            My Requests
-          </h1>
-
-          {/* Table for larger screens */}
-          <div className="hidden sm:block overflow-x-auto pb-24">
-            <table className="w-full border-collapse border border-[#154D7C] min-w-[350px]">
-              <thead>
+        {/* Table for larger screens */}
+        <div className="hidden sm:block overflow-x-auto pb-24">
+          <table className="w-full border-collapse border border-[#154D7C] min-w-[350px]">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
+                  Location
+                </th>
+                <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
+                  Property Type
+                </th>
+                <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
+                  Budget
+                </th>
+                <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
+                  Lease Term
+                </th>
+                <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {listings.length === 0 ? (
                 <tr>
-                  <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
-                    Location
-                  </th>
-                  <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
-                    Property Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
-                    Budget
-                  </th>
-                  <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
-                    Lease Term
-                  </th>
-                  <th className="px-6 py-3 text-left text-md font-raleway font-bold text-[#000000] border border-[#154D7C]">
-                    Actions
-                  </th>
+                  <td colSpan="5" className="px-6 py-3 text-center text-md font-raleway text-gray-500">
+                    No requests yet
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {listings.slice(0, visibleListings).map((listing) => (
+              ) : (
+                listings.slice(0, visibleListings).map((listing) => (
                   <tr key={listing.id} className="bg-white">
                     <td className="px-6 py-3 text-sm text-[#000000] border border-[#154D7C]">
                       {listing.address}
@@ -139,8 +145,8 @@ const handleViewDetails = (id) => {
                     <td className="px-6 py-3 text-sm text-gray-700 border border-[#154D7C]">
                       <div className="flex space-x-2">
                         <button
-                        className="bg-[#154D7C] text-white px-4 py-1 rounded-full text-sm"
-                           onClick={() => handleViewDetails(listing)}
+                          className="bg-[#154D7C] text-white px-4 py-1 rounded-full text-sm"
+                          onClick={() => handleViewDetails(listing)}
                         >
                           View Details
                         </button>
@@ -153,14 +159,20 @@ const handleViewDetails = (id) => {
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-          {/* Card view for smaller screens */}
-          <div className="sm:hidden">
-            {listings.slice(0, visibleListings).map((listing) => (
+        {/* Card view for smaller screens */}
+        <div className="sm:hidden">
+          {listings.length === 0 ? (
+            <div className="border border-[#154D7C] rounded-xl mb-2 bg-white shadow-sm p-4 text-center text-gray-500">
+              No requests yet
+            </div>
+          ) : (
+            listings.slice(0, visibleListings).map((listing) => (
               <div
                 key={listing.id}
                 className="border border-[#154D7C] rounded-xl mb-2 bg-white shadow-sm p-4"
@@ -168,9 +180,7 @@ const handleViewDetails = (id) => {
                 <div className="text-sm font-bold text-[#000000]">Location:</div>
                 <div className="text-sm text-black">{listing.address}</div>
 
-                <div className="text-sm font-bold text-[#000000] mt-2">
-                  Property Type:
-                </div>
+                <div className="text-sm font-bold text-[#000000] mt-2">Property Type:</div>
                 <div className="text-sm text-black">{listing.propertyType}</div>
 
                 <div className="text-sm font-bold text-[#000000] mt-2">Budget:</div>
@@ -178,15 +188,13 @@ const handleViewDetails = (id) => {
                   ${parseFloat(listing.rentAmount).toFixed(2)}/month
                 </div>
 
-                <div className="text-sm font-bold text-[#000000] mt-2">
-                  Lease Term:
-                </div>
+                <div className="text-sm font-bold text-[#000000] mt-2">Lease Term:</div>
                 <div className="text-sm text-black">{listing.leaseTerms.join(", ")}</div>
 
                 <div className="mt-4 flex space-x-2">
                   <button className="bg-[#154D7C] text-white px-4 py-1 rounded-full text-sm"  
                   onClick={() => alert(listing.id)}>
-                    View Detailsss
+                    View Details
                   </button>
                   <button
                     className="bg-[#C64C7B] text-white px-4 py-1 rounded-full text-sm"
@@ -196,12 +204,13 @@ const handleViewDetails = (id) => {
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          )}
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default MyRequests;

@@ -27,22 +27,33 @@ function KeyStats({ onUploadClick, onCurrentPropertiesClick, onRequestsReceivedC
 
     fetchProperties();
   }, []);
-
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await fetch(`${baseUrl}/properties/requests`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch properties requests');
-        }
+  
         const data = await response.json();
   
-        // Filter data to only include requests that belong to the logged-in landlord
-        const filteredData = data.filter((request) => request.property.userId === landlord.id);
+        // Handle cases where the response contains a "message" field
+        if (data.message) {
+          setRequests([]); // Set an empty array if no requests are found
+          setError(''); // Clear the error message to avoid rendering it
+          return;
+        }
   
-        setRequests(filteredData);
+        // Ensure data is an array before filtering
+        if (Array.isArray(data)) {
+          const filteredData = data.filter(
+            (request) => request.property.userId === landlord.id
+          );
+          setRequests(filteredData);
+          setError(''); // Clear the error message if requests are successfully fetched
+        } else {
+          throw new Error('Unexpected data format received from the backend');
+        }
       } catch (err) {
-        setError(err.message);
+        setRequests([]); // Set requests to an empty array on error
+        setError(err.message); // Set the error message for unexpected errors
       } finally {
         setLoading(false);
       }
@@ -50,7 +61,7 @@ function KeyStats({ onUploadClick, onCurrentPropertiesClick, onRequestsReceivedC
   
     fetchRequests();
   }, [landlord.id]); // Dependency array to re-fetch if landlord.id changes
-  
+   
 
   // Filter properties based on landlord ID
   const landlordProperties = properties?.filter(
@@ -59,11 +70,11 @@ function KeyStats({ onUploadClick, onCurrentPropertiesClick, onRequestsReceivedC
 
   // Count active properties
   const activePropertiesCount = landlordProperties.filter(
-    (property) => property.status === 'Active' || property.status === 'To Let'
+    (property) => property.status === 'To Let'
   ).length;
   
   // Count leased properties
-  const leasedPropertiesCount = properties.filter(
+  const leasedPropertiesCount =  landlordProperties.filter(
     (property) => property.status === 'Leased' || property.status === 'Let'
   ).length;
 

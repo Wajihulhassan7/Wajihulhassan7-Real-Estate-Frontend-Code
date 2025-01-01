@@ -3,6 +3,7 @@ import axios from "axios";
 import image11 from '../assets/new_home_images/pexels-binyaminmellish-1396122.jpg';
 import { baseUrl } from "../const/url.const";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify'; 
 
 const  RegistrationAgentsofCareProviders = () => {
   const navigate = useNavigate();
@@ -101,7 +102,12 @@ const  RegistrationAgentsofCareProviders = () => {
       }, 2000);
     } catch (error) {
       console.error(error);
-      alert("Failed to register care provider details. Please try again.");
+        if (error.response?.status === 409 && error.config.url.includes(`${baseUrl}/auth/register`)) {
+              setStep(1); // Render step 1 of the form
+              toast.error("Email already registered. Please use a different email address.");
+            } else {
+              toast.error("Failed to register agent care provider details. Please try again.");
+            }
     }
   };
   
@@ -257,7 +263,7 @@ const  RegistrationAgentsofCareProviders = () => {
           name="landlordEmail"
           value={currentEmail}
           onChange={(e) => setCurrentEmail(e.target.value)}
-          placeholder="Landlord Email Address"
+          placeholder="Care Provider Email Address"
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
         />
         <button

@@ -35,10 +35,10 @@ const ActiveInactiveListings = ({ email, onViewDetailsClick }) => {
   
             // Filter properties based on the landlord ID and status
             const active = properties.filter(
-              (property) => property.userId === landlordId && property.status === "Active"
+              (property) => property.userId === landlordId && property.status === "To Let"
             );
             const inactive = properties.filter(
-              (property) => property.userId === landlordId && property.status === "Inactive"
+              (property) => property.userId === landlordId && (property.status === "Inactive" || property.status === "Let")
             );
   
             // Update state

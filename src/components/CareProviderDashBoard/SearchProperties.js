@@ -5,7 +5,7 @@ import { FiSearch } from 'react-icons/fi';
 import MarkerHouse from "../../assets/images/houseWithLocationSymbol.png"; // Import your image
 import { baseUrl } from '../../const/url.const';
 
-const SearchProperties = () => {
+const SearchProperties = ({onViewDetailsClick}) => {
   const mapContainerRef = useRef(null); // Ref for the map container
   const mapInstanceRef = useRef(null); // Ref for the map instance
   const markersRef = useRef([]); // Ref to store markers
@@ -42,15 +42,15 @@ const SearchProperties = () => {
       mapInstanceRef.current = map;
     }
   }, []);
-
+  
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-
+  
     // Clear existing markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
-
+  
     // Define custom icon for the marker
     const customIcon = L.icon({
       iconUrl: MarkerHouse,
@@ -58,29 +58,49 @@ const SearchProperties = () => {
       iconAnchor: [16, 32],
       popupAnchor: [0, -32],
     });
-
+  
     // Add markers for filtered properties based on latitude and longitude
     filteredProperties.forEach((property) => {
-      const { latitude, longitude } = property;
+      const { latitude, longitude, id, address, city, postalCode } = property;
       if (latitude && longitude) {
         const lat = parseFloat(latitude);
         const lon = parseFloat(longitude);
         const marker = L.marker([lat, lon], { icon: customIcon })
           .addTo(map)
           .bindPopup(
-            `<b>${property.address}</b><br>${property.city}<br>${property.postalCode}`
+        `
+              <div>
+                <b>${address}</b><br>${city}<br>${postalCode}<br>
+                <button id="view-details-${id}" style="background-color: #007bff; color: white; padding: 4px 20px; border: none; border-radius: 5px; font-size: 14px;margin-top:15px; cursor: pointer; transition: all 0.3s ease;">View more details</button>
+              </div>
+            `
           );
+          marker.on('popupopen', () => {
+            const viewButton = document.getElementById(`view-details-${id}`);
+            if (viewButton) {
+              viewButton.addEventListener('click', () => handleViewDetails(id));
+            }
+          });
         markersRef.current.push(marker);
       }
     });
-
+  
     // Adjust map bounds to fit markers
     if (markersRef.current.length > 0) {
       const group = L.featureGroup(markersRef.current);
       map.fitBounds(group.getBounds());
     }
   }, [filteredProperties]);
-
+  
+  const handleViewDetails = (id) => {
+  
+    if (id) {
+      onViewDetailsClick(id); 
+    } else {
+      alert('Property id not found!');
+    }
+  };
+  
   const handleSearch = () => {
     const matched = properties.filter((property) =>
       property.postalCode.toString().startsWith(postcode)
@@ -313,11 +333,13 @@ const SearchProperties = () => {
 
 </div>
 
-        {filteredProperties.length === 0 && (
-          <div className="noResultsMessage">
-            <p style={{color:'red'}}>No properties found matching your search criteria.</p>
-          </div>
-        )}
+     
+{filteredProperties.length === 0 && (city || propertyType || numOfBedrooms || postcode) && (
+  <div className="noResultsMessage">
+    <p style={{ color: 'red' }}>No properties found matching your search criteria.</p>
+  </div>
+)}
+
 
         <div
           style={{

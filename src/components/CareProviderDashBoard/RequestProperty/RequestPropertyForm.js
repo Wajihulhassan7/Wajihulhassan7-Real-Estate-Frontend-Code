@@ -236,8 +236,7 @@ const handleSubmit = async () => {
   
       {currentPage > 1 && (
         
-        <img src={BackArrow} alt="back-arrow"    className="back-edit-add-btn"
-        onClick={handleBackPage} />
+        <i className="fa fa-arrow-left back-edit-add-btn"  onClick={handleBackPage} ></i>
       )}
         {/* Form Pages */}
         {currentPage === 1 && <PropertyFormPage1 onNext={handleNextPage}   propertyDetails={propertyDetails}

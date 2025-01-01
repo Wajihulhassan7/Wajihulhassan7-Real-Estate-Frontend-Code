@@ -3,6 +3,7 @@ import axios from "axios";
 import img from '../assets/new_home_images/webaliser-_TPTXZd9mOo-unsplash.jpg';
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../const/url.const";
+import { toast } from 'react-toastify'; 
 
 const RegistrationLandlord = () => {
   const navigate = useNavigate();
@@ -53,10 +54,15 @@ const RegistrationLandlord = () => {
       });
 
       setStep(2);
-      setProgress(50);
+      setProgress(100);
     } catch (error) {
       console.error(error);
-      alert("Failed to register basic user details. Please try again.");
+      if (error.response?.status === 409 && error.config.url.includes(`${baseUrl}/auth/register`)) {
+        setStep(1); // Render step 1 of the form
+        toast.error("Email already registered. Please use a different email address.");
+      } else {
+       toast.error("Failed to register Landlord details. Please try again.");
+      }
     }
   };
 
@@ -84,7 +90,12 @@ const RegistrationLandlord = () => {
       }, 2000);
     } catch (error) {
       console.error(error);
-      alert("Failed to register landlord details. Please try again.");
+       if (error.response?.status === 409 && error.config.url.includes(`${baseUrl}/auth/register`)) {
+             setStep(1); // Render step 1 of the form
+             toast.error("Email already registered. Please use a different email address.");
+           } else {
+            toast.error("Failed to register Landlord details. Please try again.");
+           }
     }
   };
   

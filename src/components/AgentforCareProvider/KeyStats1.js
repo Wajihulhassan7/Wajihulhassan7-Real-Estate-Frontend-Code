@@ -38,8 +38,7 @@ function KeyStats1({  onActiveRequestsClick, onMatchedPropertiesClick , onNewLis
         const matched = requestsData.filter((request) =>
           propertiesData.properties.some(
             (property) =>
-              property.city === request.city &&
-              property.propertyType === request.propertyType &&
+            
               property.postalCode === request.postalCode
           )
         );
