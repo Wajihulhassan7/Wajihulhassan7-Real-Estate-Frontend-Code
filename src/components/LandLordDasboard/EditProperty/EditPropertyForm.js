@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../../Redux/authSlice";
 import { baseUrl } from "../../../const/url.const";
 import { toast } from 'react-toastify';
-import BackArrow from "../../../assets/images/left-arrow.png";
 function EditPropertyForm({propertyId , onUpdateSuccess}) {
   const landlord = useSelector((state) => state.landlord); 
   const agentLandlord = useSelector((state) => state.agentLandlord); 
@@ -285,8 +284,7 @@ function EditPropertyForm({propertyId , onUpdateSuccess}) {
       </div>
       {currentPage > 1 && (
         
-        <img src={BackArrow} alt="back-arrow"    className="back-edit-add-btn"
-        onClick={handleBackPage} />
+        <i className="fa fa-arrow-left back-edit-add-btn"  onClick={handleBackPage} ></i>
       )}
       {/* Form Pages */}
       {currentPage === 1 && (

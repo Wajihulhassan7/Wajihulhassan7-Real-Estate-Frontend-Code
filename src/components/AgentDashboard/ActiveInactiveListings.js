@@ -79,6 +79,7 @@ const ActiveInactiveListings = ({ email, onViewDetailsClick }) => {
                 src={`${baseUrl}/uploads/${property.photos[0].replace(/^.*[\\/]uploads[\\/]/, '')}`}
                 alt="Property"
                 className="w-full object-cover rounded-3xl mb-4"
+                style={{maxWidth:'100%', maxHeight:'250px'}}
               />
               <h3 className="text-md font-medium">{property.propertyDescription}</h3>
               <p className="text-sm">{property.rentAmount} USD</p>
@@ -114,6 +115,7 @@ const ActiveInactiveListings = ({ email, onViewDetailsClick }) => {
                 src={`${baseUrl}/uploads/${property.photos[0].replace(/^.*[\\/]uploads[\\/]/, '')}`}
                 alt="Property"
                 className="w-full object-cover rounded-3xl mb-4"
+                style={{maxWidth:'100%', maxHeight:'250px'}}
               />
               <h3 className="text-md font-medium">{property.propertyDescription}</h3>
               <p className="text-sm">{property.rentAmount} USD</p>

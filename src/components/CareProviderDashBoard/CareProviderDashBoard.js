@@ -25,8 +25,28 @@ function CareProviderDashBoard() {
   const [activeComponent, setActiveComponent] = useState('dashboard');
   const [activeLink, setActiveLink] = useState('dashboard');
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+  const [history, setHistory] = useState([]);
+    const [historyLink, setHistoryLink] = useState([]);
+  
+    const handleBack = () => {
+      setHistory((prevHistory) => {
+        const newHistory = [...prevHistory];
+        const previousComponent = newHistory.pop();
+        setActiveComponent(previousComponent || 'dashboard'); // Restore the previous component or default to 'dashboard'
+        return newHistory;
+      });
+    
+      setHistoryLink((prevHistoryLink) => {
+        const newHistoryLink = [...prevHistoryLink];
+        const previousLink = newHistoryLink.pop();
+        setActiveLink(previousLink || 'dashboard'); // Restore the previous link or default to null
+        return newHistoryLink;
+      });
+    };
     
   const handleLinkClick = (componentName, linkName) => {
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
     setActiveComponent(componentName);
     setActiveLink(linkName);  
     setShowMenu(false); 
@@ -41,6 +61,9 @@ function CareProviderDashBoard() {
 
   
   const handleViewDetailsRequest = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent('viewRequest'); // Switch to edit Request component
     setActiveLink('viewRequest');
@@ -48,6 +71,9 @@ function CareProviderDashBoard() {
   
   
   const handleActiveRequestsClick = () => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setActiveComponent('myRequests'); // Update the state to render the CurrentProperties component
     setActiveLink('myRequests');
   };
@@ -56,27 +82,77 @@ function CareProviderDashBoard() {
   
   
   const handleUploadingRequestClick = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent('requestProperty'); // Switch to edit property component
     setActiveLink('activeProperties');
   };
   
+  const handleDetailsClickMatched = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('viewProperty'); // Switch to edit property component
+    setActiveLink('dashboard');
+  };
+  const handleDetailsClickSaved = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('viewProperty'); // Switch to edit property component
+    setActiveLink('savedProperties');
+  };
+  
+  const handleDetailsClickLeased = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('viewProperty'); // Switch to edit property component
+    setActiveLink('leasedProperties');
+  };
+
+  
+  const handleDetailsClickSearch = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent('viewProperty'); // Switch to edit property component
+    setActiveLink('searchProperties');
+  };
   const handleDetailsClick = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent('viewProperty'); // Switch to edit property component
     setActiveLink('viewProperty');
   };
 
   const handleUpdateSuccess = () => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setActiveComponent('myRequests'); // Update the state to render the CurrentProperties component
     setActiveLink('myRequests');
   };
   const handleMatchedPropertiesClick = () => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setActiveComponent('matchedProperties'); // Update the state to render the CurrentProperties component
     setActiveLink('dashboard');
   };
   
   const handleNewListingsClick = () => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setActiveComponent('newProperties'); // Update the state to render the CurrentProperties component
     setActiveLink('dashboard');
   };
@@ -121,6 +197,12 @@ function CareProviderDashBoard() {
 
       
 <div className='dashboardDynamicSection'>     
+{history.length > 0 && (
+     <button className="back-button" onClick={handleBack}>
+     <i className="fa fa-arrow-circle-left"></i>
+   </button>
+   
+      )}
 
 <SideNavCareProvider showMenu={showMenu} toggleMenu={toggleMenu} onLinkClick={handleLinkClick} activeLink={activeLink} />
 {activeComponent === 'dashboard' && <KeyStatsCareProvider activeRequestsClick={handleActiveRequestsClick} 
@@ -129,14 +211,14 @@ onNewListingsClick={handleNewListingsClick}
 />}
 {activeComponent === 'profile' && <EditProfileCareProvider />}
 
-{activeComponent === 'savedProperties' && <SavedProperties onViewDetailsClick={handleDetailsClick} onUploadingRequestClick={handleUploadingRequestClick} />}
-{activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'savedProperties' && <SavedProperties onViewDetailsClick={handleDetailsClickSaved} onUploadingRequestClick={handleUploadingRequestClick} />}
+{activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClickLeased} />}
 {activeComponent === 'requestProperty' && <RequestPropertyForm onUpdateSuccess={handleUpdateSuccess} propertyId={selectedPropertyId} />}
 {activeComponent === 'myRequests' && <MyRequests onViewDetailsRequest={handleViewDetailsRequest} />}
-{activeComponent === 'searchProperties' && <SearchProperties onViewDetailsClick={handleDetailsClick} />}
+{activeComponent === 'searchProperties' && <SearchProperties onViewDetailsClick={handleDetailsClickSearch} />}
 {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
 {activeComponent === 'activeProperties' && <ActiveProperties onViewDetailsClick={handleDetailsClick} onUploadingRequestClick={handleUploadingRequestClick} />}
-{activeComponent === 'matchedProperties' && <MatchedProperties />}
+{activeComponent === 'matchedProperties' && <MatchedProperties onViewDetailsClick={handleDetailsClickMatched} />}
 {activeComponent === 'viewProperty' && <RequestedProperties propertyId={selectedPropertyId} />}
 {activeComponent === 'newProperties' && <NewListing onViewDetailsClick={handleDetailsClick} />}
 

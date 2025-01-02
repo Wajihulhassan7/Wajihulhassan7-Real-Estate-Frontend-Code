@@ -6,7 +6,6 @@ import Header from '../Header';
 import "../../assets/css/dashboardSideNavogation/dashboardSideNavigation.css";
 import EditProfile from './EditProfile';
 import SideNav from './SideNav';
-import DashboardMatchmaker from './DashboardMatchmaker';
 import KeyStats from './KeyStats';
 import InactiveListing from './InactiveListing';
 import SearchforCareProviders1 from './SearchforCareProviders1';
@@ -21,78 +20,140 @@ import MyProperties from '../AgentDashboard/MyProperties';
 
 const LandlordDashboard = () => {
   const landlord = useSelector((state) => state.landlord); // Access user details from Redux store
-console.log(landlord);
-  const [showMenu, setShowMenu] = useState(false);
+const [history, setHistory] = useState([]);
+
+const [showMenu, setShowMenu] = useState(false);
   const [activeComponent, setActiveComponent] = useState('dashboard');
   const [activeLink, setActiveLink] = useState('dashboard');
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
-  const handleLinkClick = (componentName, linkName) => {
-    setActiveComponent(componentName);
-    setActiveLink(linkName);  
-    setShowMenu(false); 
-  };
+  const [historyLink, setHistoryLink] = useState([]);
 
-  const handleEditPropertyClick = (id) => {
-    setSelectedPropertyId(id); // Store the selected property ID
-    setActiveComponent('editProperty'); // Switch to edit property component
-    setActiveLink('editProperty');
-  };
-
-  const handleDetailsClick = (id) => {
-    setSelectedPropertyId(id); // Store the selected property ID
-    setActiveComponent('viewProperty'); // Switch to edit property component
-    setActiveLink('viewProperty');
+  const handleBack = () => {
+    setHistory((prevHistory) => {
+      const newHistory = [...prevHistory];
+      const previousComponent = newHistory.pop();
+      setActiveComponent(previousComponent || 'dashboard'); // Restore the previous component or default to 'dashboard'
+      return newHistory;
+    });
+  
+    setHistoryLink((prevHistoryLink) => {
+      const newHistoryLink = [...prevHistoryLink];
+      const previousLink = newHistoryLink.pop();
+      setActiveLink(previousLink || 'dashboard'); // Restore the previous link or default to null
+      return newHistoryLink;
+    });
   };
   
-  const   handleDetailsClickAllProperties = (id) => {
-    setSelectedPropertyId(id); // Store the selected property ID
-    setActiveComponent('viewProperty'); // Switch to edit property component
+
+  const handleLinkClick = (componentName, linkName) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setActiveComponent(componentName);
+    setActiveLink(linkName);
+    setShowMenu(false);
+  };
+
+  const handleEditPropertyClickAllProperties = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setSelectedPropertyId(id);
+    setActiveComponent('editProperty');
     setActiveLink('allProperties');
   };
   
+  const handleEditPropertyClick = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setSelectedPropertyId(id);
+    setActiveComponent('editProperty');
+    setActiveLink('editProperty');
+  };
+  
+  const handleDetailsClickLeased = (id) => {
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setSelectedPropertyId(id);
+    setActiveComponent('viewProperty');
+    setActiveLink('dashboard');
+  };
+  
+  const handleDetailsClick = (id) => {
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setSelectedPropertyId(id);
+    setActiveComponent('viewProperty');
+    setActiveLink('viewProperty');
+  };
+
+  const handleDetailsClickAllProperties = (id) => {
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setSelectedPropertyId(id);
+    setActiveComponent('viewProperty');
+    setActiveLink('allProperties');
+  };
+
   const handleDetailsInactiveListingClick = (id) => {
-    setSelectedPropertyId(id); // Store the selected property ID
-    setActiveComponent('viewPropertyInactive'); // Switch to edit property component
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setSelectedPropertyId(id);
+    setActiveComponent('viewPropertyInactive');
     setActiveLink('viewPropertyInactive');
   };
-  
-  const   handleCurrentPropertiesClick  = () => {
-    setActiveComponent('currentProperties'); // Switch to edit property component
+
+  const handleCurrentPropertiesClick = () => {
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setActiveComponent('currentProperties');
     setActiveLink('currentProperties');
   };
-  
 
-  // Function to toggle the 'show' class on the sidebar
   const toggleMenu = () => {
     setShowMenu(!showMenu);
   };
 
-
   const handleUploadClick = () => {
-    setActiveComponent('uploadProperty'); // Change to 'uploadProperty' when button is clicked
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setActiveComponent('uploadProperty');
     setActiveLink('uploadProperty');
   };
+
   const handleUpdateSuccess = () => {
-    setActiveComponent('currentProperties'); // Update the state to render the CurrentProperties component
+    setActiveComponent('allProperties');
+    setActiveLink('allProperties');
   };
-  
 
   const handleRequestsReceivedClick = () => {
-    setActiveComponent("requestreceived"); 
-    setActiveLink("dashboard");
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setActiveComponent('requestreceived');
+    setActiveLink('dashboard');
   };
-
+  
+  
+  const handleViewDetailsRequestMatchmaker = (id) => {
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setSelectedPropertyId(id);
+    setActiveComponent('viewRequest');
+    setActiveLink('matchmaker');
+  };
   const handleViewDetailsRequest = (id) => {
-    setSelectedPropertyId(id); 
-    setActiveComponent('viewRequest'); 
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setSelectedPropertyId(id);
+    setActiveComponent('viewRequest');
     setActiveLink('dashboard');
   };
 
-  
-  const  handleLeasedPropertiesClick = () => {
-    setActiveComponent("leasedProperties"); 
-    setActiveLink("dashboard");
+  const handleLeasedPropertiesClick = () => {
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setActiveComponent('leasedProperties');
+    setActiveLink('dashboard');
   };
+
 
   return (
     <div className="shadow-lg rounded-lg">
@@ -126,30 +187,64 @@ console.log(landlord);
       
     </div>
 
-
-<div className='dashboardDynamicSection'>     
-
-<SideNav showMenu={showMenu} toggleMenu={toggleMenu} onLinkClick={handleLinkClick} activeLink={activeLink} />
-{activeComponent === 'dashboard' && <KeyStats onUploadClick={handleUploadClick} onCurrentPropertiesClick={handleCurrentPropertiesClick} 
-   onRequestsReceivedClick={handleRequestsReceivedClick}
-   onLeasedPropertiesClick={handleLeasedPropertiesClick}
-/>}
-{activeComponent === 'profile' && <EditProfile />}
-{activeComponent === 'matchmaker' && <SearchforCareProviders1 onViewDetailsClick={handleDetailsClick} onViewDetailsRequest={handleViewDetailsRequest} />}
-{activeComponent === 'uploadProperty' && <UploadPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
-{activeComponent === 'inactiveListings' && <InactiveListing onViewDetailsInactiveListingClick={handleDetailsInactiveListingClick} />}
-{activeComponent === 'currentProperties' && (
-        <CurrentProperties onEditClick={handleEditPropertyClick} onUploadClick={handleUploadClick} onViewDetailsClick={handleDetailsClick} />
+    <div className="dashboardDynamicSection">
+      
+      {history.length > 0 && (
+     <button className="back-button" onClick={handleBack}>
+     <i className="fa fa-arrow-circle-left"></i>
+   </button>
+   
       )}
-      {activeComponent === 'editProperty' && <EditPropertyForm propertyId={selectedPropertyId} onUpdateSuccess={handleUpdateSuccess} />}
+
+      
+      {/* Dynamic Components */}
+      <SideNav
+        showMenu={showMenu}
+        toggleMenu={toggleMenu}
+        onLinkClick={handleLinkClick}
+        activeLink={activeLink}
+      />
+      {activeComponent === 'dashboard' && (
+        <KeyStats
+          onUploadClick={handleUploadClick}
+          onCurrentPropertiesClick={handleCurrentPropertiesClick}
+          onRequestsReceivedClick={handleRequestsReceivedClick}
+          onLeasedPropertiesClick={handleLeasedPropertiesClick}
+        />
+      )}
+      {activeComponent === 'profile' && <EditProfile />}
+      {activeComponent === 'matchmaker' && (
+        <SearchforCareProviders1
+          onViewDetailsClick={handleDetailsClick}
+          onViewDetailsRequest={handleViewDetailsRequestMatchmaker}
+        />
+      )}
+      {activeComponent === 'uploadProperty' && <UploadPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
+      {activeComponent === 'inactiveListings' && (
+        <InactiveListing onViewDetailsInactiveListingClick={handleDetailsInactiveListingClick} />
+      )}
+      {activeComponent === 'currentProperties' && (
+        <CurrentProperties
+          onEditClick={handleEditPropertyClick}
+          onUploadClick={handleUploadClick}
+          onViewDetailsClick={handleDetailsClick}
+        />
+      )}
+      {activeComponent === 'editProperty' && (
+        <EditPropertyForm propertyId={selectedPropertyId} onUpdateSuccess={handleUpdateSuccess} />
+      )}
       {activeComponent === 'viewProperty' && <RequestedProperties propertyId={selectedPropertyId} />}
       {activeComponent === 'viewPropertyInactive' && <RequestedProperties propertyId={selectedPropertyId} />}
-      {activeComponent === "requestreceived" && <RequestReceived  onViewDetailsRequest={handleViewDetailsRequest} />}
+      {activeComponent === 'requestreceived' && (
+        <RequestReceived onViewDetailsRequest={handleViewDetailsRequest} />
+      )}
       {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
-      {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick}  />}
-      {activeComponent === 'allProperties' && <MyProperties onViewDetailsClick={handleDetailsClickAllProperties} />}
-    </div>
-    
+      {activeComponent === 'leasedProperties' && (
+        <LeasedProperties onViewDetailsClick={handleDetailsClickLeased} />
+      )}
+      {activeComponent === 'allProperties' && (
+        <MyProperties onViewDetailsClick={handleDetailsClickAllProperties}  onEditClick={handleEditPropertyClickAllProperties} />
+      )}   </div>   
       
       <Footer />
     </div>

@@ -185,6 +185,7 @@ const handleLogout = () => {
   src={`${baseUrl}/uploads/${property.photos[0].replace(/^.*[\\/]uploads[\\/]/, '')}`}
   alt="Property"
   className="w-full object-cover rounded-3xl mb-4"
+  style={{maxWidth:'100%', maxHeight:'250px'}}
 />
 
 

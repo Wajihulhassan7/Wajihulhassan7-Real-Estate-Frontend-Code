@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Image from "../../assets/images/image5.png";
 import { baseUrl } from '../../const/url.const';
 import { useSelector } from 'react-redux';
 
@@ -43,7 +42,7 @@ const leasedProperties = data.properties.filter(
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
           {properties.map((property) => (
             <div key={property.id} className="bg-white rounded-3xl shadow-lg p-4 flex flex-col">
-              <img   src={`${baseUrl}/uploads/${property.photos[0].replace(/^.*[\\/]uploads[\\/]/, '')}`} alt="Property" className="w-full object-cover rounded-3xl mb-4" />
+              <img   src={`${baseUrl}/uploads/${property.photos[0].replace(/^.*[\\/]uploads[\\/]/, '')}`} alt="Property" className="w-full object-cover rounded-3xl mb-4" style={{maxWidth:'100%', maxHeight:'250px'}} />
               <h3 className="text-md font-medium">{property.propertyDescription}</h3>
               <p className="text-sm">{property.rentAmount} USD</p>
               <p className="text-sm mb-4">{property.propertyType}</p>

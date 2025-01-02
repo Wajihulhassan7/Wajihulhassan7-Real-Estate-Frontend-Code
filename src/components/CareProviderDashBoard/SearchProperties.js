@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { FiSearch } from 'react-icons/fi';
 import MarkerHouse from "../../assets/images/houseWithLocationSymbol.png"; // Import your image
 import { baseUrl } from '../../const/url.const';
+import "../../assets/css/dashboardMatchmaker/dashboardMatchmaker.css"
 
 const SearchProperties = ({onViewDetailsClick}) => {
   const mapContainerRef = useRef(null); // Ref for the map container

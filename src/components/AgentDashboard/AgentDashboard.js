@@ -21,27 +21,75 @@ import MyProperties from "./MyProperties";
 
 const AgentDashboard = () => {
   const agentLandlord = useSelector((state) => state.agentLandlord); 
-console.log(agentLandlord);
   const [showMenu, setShowMenu] = useState(false);
   const [activeComponent, setActiveComponent] = useState("dashboard");
   const [activeLink, setActiveLink] = useState("dashboard");
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
-  const handleLinkClick = (componentName, linkName) => {
+  const [history, setHistory] = useState([]);
+    
+     const [historyLink, setHistoryLink] = useState([]);
+   
+     const handleBack = () => {
+       setHistory((prevHistory) => {
+         const newHistory = [...prevHistory];
+         const previousComponent = newHistory.pop();
+         setActiveComponent(previousComponent || 'dashboard'); // Restore the previous component or default to 'dashboard'
+         return newHistory;
+       });
+     
+       setHistoryLink((prevHistoryLink) => {
+         const newHistoryLink = [...prevHistoryLink];
+         const previousLink = newHistoryLink.pop();
+         setActiveLink(previousLink || 'dashboard'); // Restore the previous link or default to null
+         return newHistoryLink;
+       });
+     };
+     
+    
+    const handleLinkClick = (componentName, linkName) => {
+      setHistory((prevHistory) => [...prevHistory, activeComponent]);
+      setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setActiveComponent(componentName);
     setActiveLink(linkName);
     setShowMenu(false);
   };
 
   const handleEditPropertyClick = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent("editProperty"); // Switch to edit property component
     setActiveLink("editProperty");
   };
-
+  
+    
+  const handleDetailsClickLeased = (id) => {
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent("viewProperty"); // Switch to edit property component
+    setActiveLink("dashboard");
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
+    
+  };
+  const handleDetailsClickLandlord = (id) => {
+    setSelectedPropertyId(id); // Store the selected property ID
+    setActiveComponent("viewProperty"); // Switch to edit property component
+    setActiveLink("managelandlord");
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
+    
+  };
   const handleDetailsClick = (id) => {
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent("viewProperty"); // Switch to edit property component
     setActiveLink("viewProperty");
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
     
   };
 
@@ -49,11 +97,17 @@ console.log(agentLandlord);
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent("viewPropertyInactive"); // Switch to edit property component
     setActiveLink("viewPropertyInactive");
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
   };
 
   const handleManageLandlordsClick = () => {
     setActiveComponent("managelandlord"); // Switch to edit property component
     setActiveLink("managelandlord");
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
   };
 
   // Function to toggle the 'show' class on the sidebar
@@ -64,17 +118,25 @@ console.log(agentLandlord);
   const handleUploadClick = () => {
     setActiveComponent("uploadProperty"); 
     setActiveLink("uploadProperty");
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
   };
   
   const  handleLeasedPropertiesClick = () => {
     setActiveComponent("leasedProperties"); 
     setActiveLink("dashboard");
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
   };
  
   
   const handleUpdateSuccess = () => {
-    setActiveComponent('currentProperties'); // Update the state to render the CurrentProperties component
-    setActiveLink("currentProperties");
+    setActiveComponent('allProperties');
+    setActiveLink('allProperties');
+  
+   
   };
   
   
@@ -82,22 +144,52 @@ console.log(agentLandlord);
   const handleRequestsReceivedClick = () => {
     setActiveComponent("requestreceived"); 
     setActiveLink("requestreceived");
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
   };
+  
+  const handleViewDetailsRequestMatchmaker = (id) => {
+    setSelectedPropertyId(id); 
+    setActiveComponent('viewRequest'); 
+    setActiveLink('matchmaker');
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
+  };
+  
   const handleViewDetailsRequest = (id) => {
     setSelectedPropertyId(id); 
     setActiveComponent('viewRequest'); 
     setActiveLink('viewRequest');
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
   };
   
   const manageViewDetailsActiveInactive = (email) => {
     setSelectedPropertyId(email); 
     setActiveComponent('viewLandlordDetails'); 
     setActiveLink('managelandlord');
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
   };
   
   const   handleDetailsClickAllProperties = (id) => {
     setSelectedPropertyId(id); // Store the selected property ID
     setActiveComponent('viewProperty'); // Switch to edit property component
+    setActiveLink('allProperties');
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+   
+  };
+  
+  const handleEditPropertyClickAllProperties = (id) => {
+    setHistory((prevHistory) => [...prevHistory, activeComponent]);
+    setHistoryLink((prevHistoryLink) => [...prevHistoryLink, activeLink]);
+    setSelectedPropertyId(id);
+    setActiveComponent('editProperty');
     setActiveLink('allProperties');
   };
   return (
@@ -111,7 +203,7 @@ console.log(agentLandlord);
           <div className="text-center">
             <div>
               <h1 className="text-4xl md:text-4xl lg:text-5xl leading-normal font-raleway font-bold text-[#000000]">
-                Agent Dashboard
+                Agent Landlord Dashboard
               </h1>
             </div>
             <p className="text-3xl text-[#154D7C] font-bold font-montserrat mt-8">
@@ -131,6 +223,13 @@ console.log(agentLandlord);
         </div>
       </div>
       <div className="dashboardDynamicSection">
+      {history.length > 0 && (
+     <button className="back-button" onClick={handleBack}>
+     <i className="fa fa-arrow-circle-left"></i>
+   </button>
+   
+      )}
+
         <SideNavbar
           showMenu={showMenu}
           toggleMenu={toggleMenu}
@@ -146,7 +245,7 @@ console.log(agentLandlord);
           /> 
         )}
         {activeComponent === "profile1" && <EditProfile1 />}
-        {activeComponent === "matchmaker" && <SearchforCareProviders1 onViewDetailsRequest={handleViewDetailsRequest} />}
+        {activeComponent === "matchmaker" && <SearchforCareProviders1 onViewDetailsRequest={handleViewDetailsRequestMatchmaker} />}
         {activeComponent === "uploadProperty" && <UploadPropertyForm onUpdateSuccess={handleUpdateSuccess} />}
         {activeComponent === "managelandlord" && <ManageLandlords handleViewDetails={manageViewDetailsActiveInactive} />}
         {activeComponent === "requestreceived" && <RequestReceived  onViewDetailsRequest={handleViewDetailsRequest} />}
@@ -171,10 +270,10 @@ console.log(agentLandlord);
           <RequestedProperties propertyId={selectedPropertyId} />
         )}
         {activeComponent === 'viewRequest' && <RequestDetails id={selectedPropertyId} />}
-        {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClick}  />}
-        {activeComponent === 'viewLandlordDetails' && <ActiveInactiveListings email={selectedPropertyId} onViewDetailsClick={handleDetailsClick}  />}
+        {activeComponent === 'leasedProperties' && <LeasedProperties onViewDetailsClick={handleDetailsClickLeased}  />}
+        {activeComponent === 'viewLandlordDetails' && <ActiveInactiveListings email={selectedPropertyId} onViewDetailsClick={handleDetailsClickLandlord}  />}
         
-        {activeComponent === 'allProperties' && <MyProperties onViewDetailsClick={handleDetailsClickAllProperties} />}
+        {activeComponent === 'allProperties' && <MyProperties onViewDetailsClick={handleDetailsClickAllProperties}  onEditClick={handleEditPropertyClickAllProperties} />}
       </div>
       <Footer />
     </div>

@@ -29,11 +29,11 @@ const PropertyFormPage1 = ({ propertyDetails, setPropertyDetails, onNext }) => {
     const { name, value } = e.target;
   
     // Update propertyDetails for specific fields
-    if (name === "parking") {
+    if (name === "parkingAvailability") {
       setPropertyDetails((prev) => ({
         ...prev,
-        [name]: value,
-        parkingAvailability: value === "No Parking" ? "No Parking" : "Available", // Set parkingAvailability
+        [name]: value, // Update the selected parking option
+        parkingAvailability: value, // Set parkingAvailability to the selected option
       }));
     } else if (name === "postalCode") {
       // Ensure postalCode is stored as an integer or null
@@ -320,28 +320,28 @@ const handleLeaseTermChange = (event) => {
           )}
         </div>
 
-        {/* Parking Availability */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Parking Availability</label>
-          <div className="space-y-2">
-            {["No Parking", "Street Parking", "Driveway Parking", "Garage Parking"].map(
-              (option) => (
-                <label key={option} className="flex items-center">
-                  <input
-                    type="radio"
-                    name="parking"
-                    value={option}
-                    checked={propertyDetails.parking === option}
-                    onChange={handleChange}
-                    className="mr-2"
-                    required
-                  />
-                  {option}
-                </label>
-              )
-            )}
-          </div>
-        </div>
+     {/* Parking Availability */}
+<div>
+  <label className="block text-sm font-medium mb-1">Parking Availability</label>
+  <div className="space-y-2">
+    {["No Parking", "Street Parking", "Driveway Parking", "Garage Parking"].map(
+      (option) => (
+        <label key={option} className="flex items-center">
+          <input
+            type="radio"
+            name="parkingAvailability"
+            value={option}
+            checked={propertyDetails.parkingAvailability === option} // Check against parkingAvailability
+            onChange={handleChange}
+            className="mr-2"
+          />
+          {option}
+        </label>
+      )
+    )}
+  </div>
+</div>
+
 
         {/* Accessibility Features */}
         <div>

@@ -27,20 +27,20 @@ const PropertyFormPage1 = ({ propertyDetails, setPropertyDetails, onNext }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
   
-    // Update propertyDetails and set parkingAvailability based on selected parking option
+    // Update propertyDetails for specific fields
     if (name === "parking") {
       setPropertyDetails((prev) => ({
         ...prev,
-        [name]: value,
-        parkingAvailability: value === "No Parking" ? "No Parking" : "Available", // Set parkingAvailability
+        [name]: value, // Update the selected parking option
+        parkingAvailability: value, // Set parkingAvailability to the selected option
       }));
-    }  else if (name === "postalCode") {
+    } else if (name === "postalCode") {
       // Ensure postalCode is stored as an integer or null
       setPropertyDetails((prev) => ({
         ...prev,
         [name]: value ? parseInt(value) : null,
       }));
-    }  else {
+    } else {
       setPropertyDetails((prev) => ({ ...prev, [name]: value }));
     }
   };
@@ -322,27 +322,27 @@ const handleLeaseTermChange = (event) => {
   )}
 </div>
 
-        {/* Parking Availability */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Parking Availability</label>
-          <div className="space-y-2">
-            {["No Parking", "Street Parking", "Driveway Parking", "Garage Parking"].map(
-              (option) => (
-                <label key={option} className="flex items-center">
-                  <input
-                    type="radio"
-                    name="parking"
-                    value={option}
-                    checked={propertyDetails.parking === option}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  {option}
-                </label>
-              )
-            )}
-          </div>
-        </div>
+       {/* Parking Availability */}
+<div>
+  <label className="block text-sm font-medium mb-1">Parking Availability</label>
+  <div className="space-y-2">
+    {["No Parking", "Street Parking", "Driveway Parking", "Garage Parking"].map(
+      (option) => (
+        <label key={option} className="flex items-center">
+          <input
+            type="radio"
+            name="parking"
+            value={option}
+            checked={propertyDetails.parkingAvailability === option} // Check against parkingAvailability
+            onChange={handleChange}
+            className="mr-2"
+          />
+          {option}
+        </label>
+      )
+    )}
+  </div>
+</div>
 
         {/* Accessibility Features */}
         <div>

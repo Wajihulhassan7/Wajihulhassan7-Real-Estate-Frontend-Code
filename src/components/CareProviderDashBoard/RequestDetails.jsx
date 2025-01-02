@@ -1,7 +1,6 @@
 
 import Image14 from '../../assets/images/image2.png';
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 
 const RequestDetails = ({id}) => {
   const [property, setProperty] = useState(id);

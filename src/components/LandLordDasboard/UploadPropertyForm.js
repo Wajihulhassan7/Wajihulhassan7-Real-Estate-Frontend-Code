@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../Redux/authSlice";
 import { baseUrl } from "../../const/url.const";
 import { toast } from 'react-toastify';
-import BackArrow from "../../assets/images/left-arrow.png";
 
 function UploadPropertyForm({ onUpdateSuccess}) {
   const dispatch = useDispatch();

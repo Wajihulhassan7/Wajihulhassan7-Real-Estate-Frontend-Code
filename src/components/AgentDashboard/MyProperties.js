@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { logout } from '../../Redux/authSlice';
 
 
-const MyProperties = ({onViewDetailsClick}) => {
+const MyProperties = ({onEditClick, onViewDetailsClick}) => {
 const [visibleDropdown, setVisibleDropdown] = useState(null);
  const dispatch = useDispatch();
     const [activeProperties, setActiveProperties] = useState([]);
@@ -170,6 +170,9 @@ const [visibleDropdown, setVisibleDropdown] = useState(null);
       }
     };
     
+  const handleEdit = (id) => {
+    onEditClick(id);
+  };
     const handleViewDetails = (id) => {
         onViewDetailsClick(id);
       };
@@ -188,11 +191,18 @@ const [visibleDropdown, setVisibleDropdown] = useState(null);
                 src={`${baseUrl}/uploads/${property.photos[0].replace(/^.*[\\/]uploads[\\/]/, '')}`}
                 alt="Property"
                 className="w-full object-cover rounded-3xl mb-4"
+                style={{maxWidth:'100%', maxHeight:'250px'}}
               />
               <h3 className="text-md font-medium">{property.propertyDescription}</h3>
               <p className="text-sm">{property.rentAmount} USD</p>
               <p className="text-sm mb-4">{property.propertyType}</p>
               <div className="flex justify-between relative">
+              <button
+                  onClick={() => handleEdit(property.id)}
+                  className="bg-[#2E86AB] text-white text-[14px] px-3 py-1 rounded-full hover:bg-[#1E5D7B]"
+                >
+                  Edit
+                </button>
                 <button className="bg-[#a53864] text-white text-[14px] px-3 py-1 rounded-full hover:bg-[#1E5D7B]"  onClick={() => handleViewDetails(property.id)}>
                   View Details
                 </button>
@@ -215,14 +225,7 @@ const [visibleDropdown, setVisibleDropdown] = useState(null);
     >
       Deactivate
     </button>
-    <button
-      className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100 ${
-        property.status === "Let" ? "bg-green-200" : "" 
-      }`}
-      onClick={() => updatePropertyStatus(property.id, "Let")} // Set status to "To Let"
-    >
-      Let
-    </button>
+   
     {/* To Let Button */}
     <button
       className={`block w-full text-left px-4 py-2 text-[14px] text-black hover:bg-gray-100 ${

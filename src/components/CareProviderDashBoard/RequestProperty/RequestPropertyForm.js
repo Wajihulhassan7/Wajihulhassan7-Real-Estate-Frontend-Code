@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import PropertyFormPage1 from "./Upload1";
 import PropertyFormPage2 from "./Upload2";
-import BackArrow from "../../../assets/images/left-arrow.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../Redux/authSlice";
 import { useNavigate } from "react-router-dom";
