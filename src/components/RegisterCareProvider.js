@@ -493,6 +493,12 @@ const RegistrationCareProvider = () => {
                     value={formData.yearsInOperation}
                     onChange={handleChange}
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
+                    min="0" // Prevents values below 0
+                    onKeyDown={(e) => {
+                      if (e.key === "-" || e.key === "e") {
+                        e.preventDefault(); // Prevents negative signs and scientific notation
+                      }
+                    }}
                   />
              <input
                     type="text"
@@ -509,6 +515,12 @@ const RegistrationCareProvider = () => {
                     value={formData.numberOfEmployees}
                     onChange={handleChange}
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1762A9]"
+                    min="0" // Prevents values below 0
+                    onKeyDown={(e) => {
+                      if (e.key === "-" || e.key === "e") {
+                        e.preventDefault(); // Prevents negative signs and scientific notation
+                      }
+                    }}
                   />   
     <button
       type="submit"

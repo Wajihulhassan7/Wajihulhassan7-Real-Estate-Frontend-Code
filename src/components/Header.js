@@ -50,14 +50,14 @@ const Header = () => {
         {isAuthenticatedLandlord || isAuthenticatedCareProvider || isAuthenticatedAgentLandlord || isAuthenticatedAgentCareProvider ? (
        
         <>    <div className="search-mobile">
-        <div className="relative">
+     {/*    <div className="relative">
           <input
             type="text"
             placeholder="Search"
             className="py-2 pl-8 pr-4 border border-[#a53864] rounded-full focus:outline-none w-full sm:w-auto focus:ring-1 focus:ring-[#a53864] focus:shadow-md"
           />
           <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#a53864]" />
-        </div>
+        </div> */}
       </div>
           <Link
             className="bg-[#C64C7B] text-white px-4 py-2 rounded-lg text-sm sm:text-md hover:bg-[#a53864] hover:shadow-lg transition duration-300 ease-in-out"
@@ -100,7 +100,7 @@ const Header = () => {
                 </Link>
               </div>
             )}
-            <div className="search-mobile">
+      {/*       <div className="search-mobile">
               <div className="relative">
                 <input
                   type="text"
@@ -108,8 +108,8 @@ const Header = () => {
                   className="py-2 pl-8 pr-4 border border-[#a53864] rounded-full focus:outline-none w-full sm:w-auto focus:ring-1 focus:ring-[#a53864] focus:shadow-md"
                 />
                 <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#a53864]" />
-              </div>
-            </div>
+              </div> 
+            </div> */}
           </>
         )}
       </div>
@@ -136,14 +136,14 @@ const Header = () => {
       <Link className="text-[#000000] text-lg hover:text-[#C64C7B]" to="/Services">
         Our Services
       </Link>
-      <div className="relative mx-auto sm:ml-8 w-11/12 sm:w-auto">
+    {/*  <div className="relative mx-auto sm:ml-8 w-11/12 sm:w-auto">
         <input
           type="text"
           placeholder="Search"
           className="py-2 pl-8 pr-4 border border-[#C64C7B] rounded-full focus:outline-none w-full sm:w-auto focus:ring-1 focus:ring-[#C64C7B] focus:shadow-md"
         />
         <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#C64C7B]" />
-      </div>
+      </div> */}
       <Link
         className="bg-[#C64C7B] text-white px-4 py-2 rounded-lg text-sm sm:text-md hover:bg-[#a53864] hover:shadow-lg transition duration-300 ease-in-out"
         onClick={handleLogout}
@@ -157,14 +157,14 @@ const Header = () => {
       <Link className="text-[#000000] text-lg hover:text-[#C64C7B]" to="/Services">
         Our Services
       </Link>
-      <div className="relative mx-auto sm:ml-8 w-11/12 sm:w-auto">
+    {/*   <div className="relative mx-auto sm:ml-8 w-11/12 sm:w-auto">
         <input
           type="text"
           placeholder="Search"
           className="py-2 pl-8 pr-4 border border-[#C64C7B] rounded-full focus:outline-none w-full sm:w-auto focus:ring-1 focus:ring-[#C64C7B] focus:shadow-md"
         />
         <FiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#C64C7B]" />
-      </div>
+      </div> */}
       <Link
         to="/login"
         className="bg-[#C64C7B] text-white px-4 py-2 rounded-lg text-sm sm:text-md hover:bg-[#a53864] hover:shadow-lg transition duration-300 ease-in-out"

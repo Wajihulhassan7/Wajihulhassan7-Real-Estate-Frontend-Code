@@ -401,6 +401,12 @@ const EditProfileCareProvider = () => {
           onChange={handleChange}
           placeholder={!isEditing ? formData.numberOfEmployees : ""}
           className={isEditing ? "editable" : ""}
+          min="0" // Prevents values below 0
+          onKeyDown={(e) => {
+            if (e.key === "-" || e.key === "e") {
+              e.preventDefault(); // Prevents negative signs and scientific notation
+            }
+          }}
         />
       </div>
       <div className="formField">
@@ -414,6 +420,12 @@ const EditProfileCareProvider = () => {
           onChange={handleChange}
           placeholder={!isEditing ? formData.yearsInOperation : ""}
           className={isEditing ? "editable" : ""}
+          min="0" // Prevents values below 0
+          onKeyDown={(e) => {
+            if (e.key === "-" || e.key === "e") {
+              e.preventDefault(); // Prevents negative signs and scientific notation
+            }
+          }}
         />
       </div>
       

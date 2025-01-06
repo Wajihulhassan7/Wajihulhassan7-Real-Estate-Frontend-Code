@@ -268,6 +268,12 @@ const EditProfile1 = () => {
                         onChange={handleChange}
                         placeholder={!isEditing ? agentCareProvider.yearsInBusiness : ""}
                         className={isEditing ? "editable" : ""}
+                        min="0" // Prevents values below 0
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e") {
+                            e.preventDefault(); // Prevents negative signs and scientific notation
+                          }
+                        }}
                     />
                 </div>
             </div>
@@ -283,6 +289,12 @@ const EditProfile1 = () => {
                         onChange={handleChange}
                         placeholder={!isEditing ? agentCareProvider.numberOfEmployees : ""}
                         className={isEditing ? "editable" : ""}
+                        min="0" // Prevents values below 0
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e") {
+                            e.preventDefault(); // Prevents negative signs and scientific notation
+                          }
+                        }}
                     />
                 </div>
                 <div className="formField">
@@ -302,6 +314,12 @@ const EditProfile1 = () => {
                         onChange={handleChange}
                         placeholder={!isEditing ? agentCareProvider.totalManagedCareProviders : ""}
                         className={isEditing ? "editable" : ""}
+                        min="0" // Prevents values below 0
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e") {
+                            e.preventDefault(); // Prevents negative signs and scientific notation
+                          }
+                        }}
                     />
                 </div>
             </div>

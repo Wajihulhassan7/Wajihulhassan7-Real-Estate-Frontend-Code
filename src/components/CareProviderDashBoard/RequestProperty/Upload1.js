@@ -14,22 +14,55 @@ const PropertyFormPage1 = ({ propertyDetails, setPropertyDetails, onNext }) => {
   ];
 const [showInfo, setShowInfo] = useState(false);
   const [showLongitudeInfo, setShowLongitudeInfo] = useState(false);
-
+const [formError, setFormError] = useState("");
   const handleAccessibilityChange = (feature) => {
+    setPropertyDetails((prev) => {
+      if (formError) setFormError("");
+      const isSelected = prev.accessibilityFeatures.some((f) =>
+        feature === "Other" ? f.startsWith("Other") : f === feature
+      );
+  
+      // Toggle the feature (including "Other")
+      return {
+        ...prev,
+        accessibilityFeatures: isSelected
+          ? prev.accessibilityFeatures.filter((f) =>
+              feature === "Other" ? !f.startsWith("Other") : f !== feature
+            ) // Remove feature
+          : [...prev.accessibilityFeatures, feature], // Add feature
+      };
+    });
+  };
+  
+  const handleOtherChange = (e) => {
+    const { value } = e.target;
+    if (formError) setFormError("");
     setPropertyDetails((prev) => ({
       ...prev,
-      accessibilityFeatures: prev.accessibilityFeatures.includes(feature)
-        ? prev.accessibilityFeatures.filter((f) => f !== feature)
-        : [...prev.accessibilityFeatures, feature],
+      accessibilityFeatures: prev.accessibilityFeatures.map((f) =>
+        f.startsWith("Other") ? `Other: ${value}` : f
+      ),
     }));
   };
-
+  
+  const validateForm = () => {
+    if (propertyDetails.accessibilityFeatures.length === 0) {
+      setFormError("Please select at least one field.");
+      return false;
+    }
+    setFormError("");
+    return true;
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(propertyDetails);
-    onNext();
+    if (validateForm()) {
+      console.log(propertyDetails);
+      onNext(); // Parent will handle the propertyDetails
+
+    }
   };
-  const handleChange = (e) => {
+    const handleChange = (e) => {
     const { name, value } = e.target;
   
     // Update propertyDetails for specific fields
@@ -152,13 +185,18 @@ const handleLeaseTermChange = (event) => {
           <div className="flex items-center space-x-4">
             <input
               type="number"
-              min="0"
               placeholder="Enter amount"
               className="border rounded-lg p-2 w-2/3"
               name="rentAmount"
               value={propertyDetails.rentAmount}
               onChange={handleChange}
               required
+              min="0" // Prevents values below 0
+              onKeyDown={(e) => {
+                if (e.key === "-" || e.key === "e") {
+                  e.preventDefault(); // Prevents negative signs and scientific notation
+                }
+              }}
             />
             <select
               className="border rounded-lg p-2 w-1/3"
@@ -344,37 +382,46 @@ const handleLeaseTermChange = (event) => {
   </div>
 </div>
 
-        {/* Accessibility Features */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Accessibility Features</label>
-          <div className="space-y-2">
-            {accessibilityOptions.map((feature) => (
-              <div key={feature} className="flex items-center">
-                <input
-                  type="checkbox"
-                  value={feature}
-                  checked={propertyDetails.accessibilityFeatures.includes(feature)}
-                  onChange={() => handleAccessibilityChange(feature)}
-                  className="mr-2"
-                 
-                />
-                <span>{feature}</span>
-              </div>
-            ))}
-            {propertyDetails.accessibilityFeatures.includes("Other") && (
-              <div className="flex items-center">
-                <input
-                  type="text"
-                  placeholder="Please specify"
-                  className="ml-4 border rounded-lg p-1 w-full max-w-xs"
-                  name="otherAccessibilityText"
-                  value={propertyDetails.otherAccessibilityText}
-                  onChange={handleChange}
-                />
-              </div>
+       
+<div>
+    <label className="block text-sm font-medium mb-1">Accessibility Features</label>
+    <div className="space-y-2">
+      {accessibilityOptions.map((feature) => (
+        <div key={feature} className="flex items-center">
+          <input
+            type="checkbox"
+            value={feature}
+            checked={propertyDetails.accessibilityFeatures.some((f) =>
+              feature === "Other" ? f.startsWith("Other") : f === feature
             )}
-          </div>
+            onChange={() => handleAccessibilityChange(feature)}
+            className="mr-2"
+          />
+          <span>{feature}</span>
         </div>
+      ))}
+
+      {/* Additional input for "Other" */}
+      {propertyDetails.accessibilityFeatures.some((f) => f.startsWith("Other")) && (
+        <div className="flex items-center">
+          <input
+            type="text"
+            placeholder="Please specify"
+            className="ml-4 border rounded-lg p-1 w-full max-w-xs"
+            value={
+              propertyDetails.accessibilityFeatures.find((f) =>
+                f.startsWith("Other")
+              )?.replace("Other: ", "") || ""
+            }
+            onChange={handleOtherChange}
+            required
+          />
+        </div>
+      )}
+    </div>
+    {formError && <p className="text-red-500 text-sm mt-2">{formError}</p>}
+  </div>
+
 
         {/* Property Description */}
         <div>
@@ -413,6 +460,12 @@ const handleLeaseTermChange = (event) => {
     value={propertyDetails.postalCode || ""}
     onChange={handleChange}
     required
+    min="0" // Prevents values below 0
+    onKeyDown={(e) => {
+      if (e.key === "-" || e.key === "e") {
+        e.preventDefault(); // Prevents negative signs and scientific notation
+      }
+    }}
   />
 </div>
 
